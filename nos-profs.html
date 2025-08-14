@@ -5,10 +5,24 @@
     }
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+      grid-template-columns: repeat(4, 1fr); /* 4 colonnes pour desktop */
       gap: 1rem;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    /* Grille pour la dernière ligne (2 profs centrés) */
+    .team-grid-last {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 2rem auto 0;
+    }
+
+    .team-grid-last .team-card {
+      width: calc(25% - 0.75rem); /* Même largeur que les autres cartes (1/4 de la largeur) */
+      flex-shrink: 0;
     }
     .team-card {
       background: white;
@@ -90,9 +104,14 @@
       display: none;
     }
     @media (max-width: 1024px) {
-      .team-grid {
+      .team-grid,
+      .team-grid-last {
         grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur tablette */
         gap: 1.2rem;
+      }
+      
+      .team-grid-last .team-card {
+        width: calc(50% - 0.6rem); /* 2 colonnes sur tablette */
       }
     }
 
@@ -100,12 +119,18 @@
       #slider {
         padding-bottom: 2rem;
       }
-      .team-grid {
+      .team-grid,
+      .team-grid-last {
         display: flex;
         overflow: hidden;
         scroll-behavior: smooth;
         scroll-snap-type: x mandatory;
         gap: 1rem;
+      }
+      
+      .team-grid-last .team-card {
+        width: 85%; /* Même largeur que les autres cartes sur mobile */
+        min-width: 85%;
       }
       .team-card {
         min-width: 85%;
@@ -167,6 +192,7 @@
   </style>
   
   <div class="team-section">
+    <!-- Première ligne : 4 profs -->
     <div class="team-grid" id="slider">
       <!-- Prof 1 -->
       <div class="team-card">
@@ -216,6 +242,10 @@
         <p class="team-quote">"Viens exprimer ta sensualité avec confiance et puissance."</p>
         <div class="team-name">Pimousse</div>
       </div>
+    </div>
+
+    <!-- Deuxième ligne : 4 profs -->
+    <div class="team-grid">
       <!-- Prof 5 -->
       <div class="team-card">
         <div class="team-photo-container" onclick="togglePhoto(this)">
@@ -229,7 +259,7 @@
         <div class="team-name">Gaelle</div>
       </div>
 
-      <!-- Prof 7 -->
+      <!-- Prof 6 -->
       <div class="team-card">
         <div class="team-photo-container" onclick="togglePhoto(this)">
           <div class="team-photo-flip">
@@ -241,7 +271,7 @@
         <p class="team-quote">"La pole m'a permis de découvrir ma force intérieure. Je t'aide à faire pareil."</p>
         <div class="team-name">Anne</div>
       </div>
-      <!-- Prof 8 -->
+      <!-- Prof 7 -->
       <div class="team-card">
         <div class="team-photo-container" onclick="togglePhoto(this)">
           <div class="team-photo-flip">
@@ -253,7 +283,7 @@
         <p class="team-quote">"La pole dance m'a aidée a passer de chenille à papillon, alors viens t'envoler avec nous !"</p>
         <div class="team-name">Margot</div>
       </div>
-      <!-- Prof 9 -->
+      <!-- Prof 8 -->
       <div class="team-card">
         <div class="team-photo-container" onclick="togglePhoto(this)">
           <div class="team-photo-flip">
@@ -265,7 +295,11 @@
         <p class="team-quote">"Trouve ton équilibre et renforce-toi en douceur avec le pilate !"</p>
         <div class="team-name">Brunelle</div>
       </div>
-      <!-- Prof 10 -->
+    </div>
+
+    <!-- Troisième ligne : 2 profs centrés (1 professeur manquant) -->
+    <div class="team-grid-last">
+      <!-- Prof 9 -->
       <div class="team-card">
         <div class="team-photo-container" onclick="togglePhoto(this)">
           <div class="team-photo-flip">
@@ -276,6 +310,18 @@
         <div class="team-badge">BootyKat</div>
         <p class="team-quote">"Lâche-toi et laisse parler ton attitude féline sur des rythmes endiablés !"</p>
         <div class="team-name">Katou</div>
+      </div>
+      <!-- Prof 10 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/proffesseurs-de-sophrologie-dOqDRWZ9KnIoOrbO.jpg" alt="Photo Marianne">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-sophrologie-Y4LvRrPy1Xc941k8.jpg" alt="Photo Marianne 2">
+          </div>
+        </div>
+        <div class="team-badge">Sophrologie</div>
+        <p class="team-quote">"Harmonisez corps et esprit, libérez-vous du stress et reconnectez-vous à votre bien-être intérieur."</p>
+        <div class="team-name">Marianne</div>
       </div>
     </div>
     <div class="slider-arrows">

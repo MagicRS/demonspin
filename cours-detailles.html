@@ -94,6 +94,10 @@
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-twerk-91-A3Q7DlXrGBSR6vvK.png");
         }
 
+        .course-header.sophrologie {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-sophrologie-Y4LvRrPy1Xc941k8.jpg");
+        }
+
         .course-title {
             color: white;
             font-size: 2rem;
@@ -680,6 +684,54 @@
                     <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
                 </div>
             </div>
+
+            <!-- Sophrologie -->
+            <div class="course-detail-card" id="sophrologie">
+                <div class="course-header sophrologie">
+                    <div class="course-title">SOPHROLOGIE</div>
+                    <div class="new-badge">NOUVEAU!</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        La sophrologie est une approche psychocorporelle qui harmonise corps et esprit à travers des techniques de respiration, de relaxation dynamique et de visualisation positive. Cette méthode douce vous aide à mieux gérer le stress quotidien et développe votre conscience corporelle.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🌸 Détente musculaire profonde</div>
+                            <div class="benefit-item">😴 Amélioration du sommeil</div>
+                            <div class="benefit-item">🔄 Optimisation récupération</div>
+                            <div class="benefit-item">🧘‍♀️ Gestion du stress</div>
+                            <div class="benefit-item">🎯 Concentration renforcée</div>
+                            <div class="benefit-item">💫 Confiance en soi</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="sophrologie">
+                        <span id="sophrologie-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="sophrologie-details">
+                        <h4>Techniques enseignées :</h4>
+                        <ul>
+                            <li>Respiration contrôlée et sophro-respiration</li>
+                            <li>Relaxation dynamique et détente progressive</li>
+                            <li>Visualisation positive et imagerie mentale</li>
+                            <li>Exercices de décontraction musculaire ciblée</li>
+                            <li>Techniques d'ancrage et de concentration</li>
+                        </ul>
+                        
+                        <h4>Complément idéal au sport :</h4>
+                        <p>La sophrologie améliore la précision gestuelle, optimise la récupération entre les séances d'entraînement et développe la concentration nécessaire aux disciplines techniques comme la pole dance ou le cerceau aérien.</p>
+                        
+                        <h4>Progression accessible :</h4>
+                        <p>Accessible dès 16 ans sans prérequis physique particulier. Les premiers bénéfices se ressentent dès 2-3 séances, avec une pratique régulière recommandée pour ancrer durablement les acquis et développer votre autonomie.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -695,7 +747,8 @@
             'polestrap': 'pole-strap',
             'choree': 'choree',
             'pilates': 'pilate',
-            'bootykat': 'bootykat'
+            'bootykat': 'bootykat',
+            'sophrologie': 'sophrologie'
         };
 
         // Variables pour éviter les appels multiples
@@ -1129,7 +1182,7 @@ function testUrl(hash) {
     window.location.hash = hash;
     setTimeout(() => {
                                 // Forcer la navigation
-                        if (hash && ['poledance','cerceau','souplesse','exotik','polestrap','choree','pilates','bootykat'].includes(hash)) {
+                        if (hash && ['poledance','cerceau','souplesse','exotik','polestrap','choree','pilates','bootykat','sophrologie'].includes(hash)) {
                             testDiscipline(hash);
                         }
     }, 100);
