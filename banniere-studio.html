@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bannière Studio - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .photo-banner {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: #f8f9fa;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            position: relative;
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+        }
+
+        .slide-name {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(56, 118, 125, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .slide.active .slide-name {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Flèches de navigation */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(56, 118, 125, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(56, 118, 125, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-arrow.prev {
+            left: 15px;
+        }
+
+        .nav-arrow.next {
+            right: 15px;
+        }
+
+        /* Points de navigation */
+        .nav-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-dot.active {
+            background: #38767d;
+            border-color: white;
+            transform: scale(1.2);
+        }
+
+        .nav-dot:hover {
+            background: rgba(56, 118, 125, 0.8);
+        }
+
+        /* Bouton de pause/lecture */
+        .pause-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .pause-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.05);
+        }
+
+        .photo-banner:hover .pause-btn {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .photo-banner {
+                height: 400px;
+            }
+
+            .nav-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .nav-arrow.prev {
+                left: 10px;
+            }
+
+            .nav-arrow.next {
+                right: 10px;
+            }
+
+            .slide-name {
+                bottom: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .nav-dots {
+                bottom: 15px;
+            }
+
+            .nav-dot {
+                width: 10px;
+                height: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .photo-banner {
+                height: 320px;
+                border-radius: 8px;
+            }
+
+            .slide-name {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="photo-banner">
+            <div class="slider-container">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- Les slides seront générées par JavaScript -->
+                </div>
+                
+                <button class="nav-arrow prev" id="prevBtn">‹</button>
+                <button class="nav-arrow next" id="nextBtn">›</button>
+                
+                <div class="nav-dots" id="navDots">
+                    <!-- Les points seront générés par JavaScript -->
+                </div>
+                
+                <button class="pause-btn" id="pauseBtn">⏸ Pause</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================================
+        // CONFIGURATION - MODIFIEZ ICI VOS PHOTOS
+        // ======================================
+        
+        const PHOTOS_CONFIG = [
+            {
+                url: "https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-pole-dance-dJobP23vg6HVGP3y.png",
+                link: "",
+                name: "La Kaly"
+            },
+            {
+                url: "https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-cerceau-aerien-mk3J4wBKMGuvRN7n.png",
+                link: "",
+                name: "La Chill"
+            },
+            {
+                url: "https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-etirrement-dOqDZeOgNPSDeKax.png",
+                link: "",
+                name: "Le boudoir"
+            }
+        ];
+
+        // ======================================
+        // PARAMÈTRES DU SLIDER
+        // ======================================
+        const AUTO_PLAY_INTERVAL = 5000; // 5 secondes
+        const TRANSITION_DURATION = 500; // 0.5 seconde
+
+        // ======================================
+        // LOGIQUE DU SLIDER - NE PAS MODIFIER
+        // ======================================
+        
+        class PhotoBanner {
+            constructor() {
+                this.currentIndex = 0;
+                this.isPlaying = true;
+                this.isManuallyPaused = false; // Nouvelle propriété pour la pause manuelle
+                this.autoPlayTimer = null;
+                this.sliderTrack = document.getElementById('sliderTrack');
+                this.navDots = document.getElementById('navDots');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                
+                this.init();
+            }
+
+            init() {
+                this.createSlides();
+                this.createDots();
+                this.bindEvents();
+                this.updatePauseButton(); // Initialiser l'état du bouton
+                this.startAutoPlay();
+                this.showSlide(0);
+            }
+
+            createSlides() {
+                this.sliderTrack.innerHTML = '';
+                
+                PHOTOS_CONFIG.forEach((photo, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'slide';
+                    slide.style.backgroundImage = `url("${photo.url}")`;
+                    slide.addEventListener('click', () => {
+                        if (photo.link) {
+                            window.open(photo.link, '_blank');
+                        }
+                    });
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'slide-overlay';
+
+                    const nameElement = document.createElement('div');
+                    nameElement.className = 'slide-name';
+                    nameElement.textContent = photo.name || '';
+
+                    slide.appendChild(overlay);
+                    if (photo.name) {
+                        slide.appendChild(nameElement);
+                    }
+                    
+                    this.sliderTrack.appendChild(slide);
+                });
+            }
+
+            createDots() {
+                this.navDots.innerHTML = '';
+                
+                PHOTOS_CONFIG.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot';
+                    dot.addEventListener('click', () => {
+                        this.goToSlide(index);
+                    });
+                    
+                    this.navDots.appendChild(dot);
+                });
+            }
+
+            bindEvents() {
+                // Flèches de navigation
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    this.previousSlide();
+                });
+
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    this.nextSlide();
+                });
+
+                // Pause au survol
+                const banner = document.querySelector('.photo-banner');
+                banner.addEventListener('mouseenter', () => {
+                    if (!this.isManuallyPaused) {
+                        this.stopAutoPlay();
+                        this.updatePauseButton();
+                    }
+                });
+
+                banner.addEventListener('mouseleave', () => {
+                    if (!this.isManuallyPaused && this.isPlaying) {
+                        this.startAutoPlay();
+                        this.updatePauseButton();
+                    }
+                });
+
+                // Gestion du bouton de pause
+                this.pauseBtn.addEventListener('click', () => {
+                    this.toggleManualPause();
+                });
+
+                // Navigation au clavier
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') {
+                        this.previousSlide();
+                    } else if (e.key === 'ArrowRight') {
+                        this.nextSlide();
+                    } else if (e.key === ' ') {
+                        e.preventDefault();
+                        this.toggleManualPause();
+                    }
+                });
+            }
+
+            showSlide(index) {
+                const slides = document.querySelectorAll('.slide');
+                const dots = document.querySelectorAll('.nav-dot');
+
+                // Retirer la classe active de tous les éléments
+                slides.forEach(slide => slide.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+
+                // Ajouter la classe active aux éléments courants
+                if (slides[index]) {
+                    slides[index].classList.add('active');
+                }
+                if (dots[index]) {
+                    dots[index].classList.add('active');
+                }
+
+                // Déplacer le slider
+                const translateX = -index * 100;
+                this.sliderTrack.style.transform = `translateX(${translateX}%)`;
+
+                this.currentIndex = index;
+            }
+
+            goToSlide(index) {
+                this.showSlide(index);
+                this.resetAutoPlay();
+            }
+
+            nextSlide() {
+                const nextIndex = (this.currentIndex + 1) % PHOTOS_CONFIG.length;
+                this.goToSlide(nextIndex);
+            }
+
+            previousSlide() {
+                const prevIndex = (this.currentIndex - 1 + PHOTOS_CONFIG.length) % PHOTOS_CONFIG.length;
+                this.goToSlide(prevIndex);
+            }
+
+            startAutoPlay() {
+                if (this.isPlaying && !this.isManuallyPaused) {
+                    this.autoPlayTimer = setInterval(() => {
+                        this.nextSlide();
+                    }, AUTO_PLAY_INTERVAL);
+                }
+            }
+
+            stopAutoPlay() {
+                if (this.autoPlayTimer) {
+                    clearInterval(this.autoPlayTimer);
+                    this.autoPlayTimer = null;
+                }
+            }
+
+            resetAutoPlay() {
+                this.stopAutoPlay();
+                this.startAutoPlay();
+            }
+
+            toggleManualPause() {
+                this.isManuallyPaused = !this.isManuallyPaused;
+                this.isPlaying = !this.isManuallyPaused;
+                
+                if (this.isManuallyPaused) {
+                    this.stopAutoPlay();
+                } else {
+                    this.startAutoPlay();
+                }
+                
+                this.updatePauseButton();
+            }
+
+            updatePauseButton() {
+                // Utiliser l'état logique plutôt que l'état technique du timer
+                if (this.isManuallyPaused) {
+                    this.pauseBtn.textContent = '▶ Play';
+                    this.pauseBtn.style.background = 'rgba(56, 118, 125, 0.8)';
+                } else {
+                    this.pauseBtn.textContent = '⏸ Pause';
+                    this.pauseBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+                }
+                
+                // Afficher en permanence si en pause manuelle
+                if (this.isManuallyPaused) {
+                    this.pauseBtn.style.opacity = '1';
+                } else {
+                    // Sinon, laisser le CSS gérer l'affichage au survol
+                    this.pauseBtn.style.opacity = '';
+                }
+            }
+        }
+
+        // Initialiser le slider une fois le DOM chargé
+        document.addEventListener('DOMContentLoaded', () => {
+            new PhotoBanner();
+        });
+
+        // Gestion des erreurs d'images
+        window.addEventListener('error', (e) => {
+            if (e.target.tagName === 'IMG') {
+                console.warn('Erreur de chargement d\'image:', e.target.src);
+            }
+        });
+    </script>
+</body>
+</html> 

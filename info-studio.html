@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informations Studio - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .studio-info-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: row;
+            min-height: 300px;
+        }
+
+        .studio-info-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .map-section {
+            flex: 1;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid #eee;
+            color: #666;
+            font-style: italic;
+        }
+
+        .studio-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .info-item {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+            margin-left: 5px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            fill: #2e7162;
+        }
+
+        /* Icons SVG */
+        .location-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232e7162'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .clock-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232e7162'%3E%3Cpath d='M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .address-text {
+            font-weight: 600;
+            color: #2e7162;
+        }
+
+        .map-placeholder {
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .schedule-day {
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .schedule-day strong {
+            color: #2e7162;
+            font-weight: 600;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        /* Responsive pour mobile */
+        @media (max-width: 768px) {
+            .studio-info-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .map-section {
+                border-left: none;
+                border-top: 1px solid #eee;
+                min-height: 200px;
+            }
+
+            .info-section {
+                padding: 25px 20px;
+            }
+
+            .studio-title {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            .info-label {
+                font-size: 15px;
+            }
+
+            .info-value {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .info-section {
+                padding: 20px 15px;
+            }
+
+            .studio-title {
+                font-size: 22px;
+            }
+
+            .info-item {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="studio-info-container">
+            <!-- Section des informations -->
+            <div class="info-section">
+                <h2 class="studio-title">Studio Demon Spin</h2>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <div class="icon location-icon"></div>
+                        Adresse
+                    </div>
+                    <div class="info-value">
+                        <span class="address-text">Demon Spin</span><br>
+                        14 rue Léonard de Vinci<br>
+                        91220 Le Plessis-Pâté
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <div class="icon clock-icon"></div>
+                        Horaires
+                    </div>
+                    <div class="info-value">
+                        <div class="schedule-day"><strong>Lundi</strong> : 18:00–22:00</div>
+                        <div class="schedule-day"><strong>Mardi</strong> : 18:00–22:00</div>
+                        <div class="schedule-day"><strong>Mercredi</strong> : 18:00–22:00</div>
+                        <div class="schedule-day"><strong>Jeudi</strong> : 12:00–22:00</div>
+                        <div class="schedule-day"><strong>Vendredi</strong> : 18:00–22:00</div>
+                        <div class="schedule-day"><strong>Samedi</strong> : 11:00–18:00</div>
+                        <div class="schedule-day"><strong>Dimanche</strong> : 10:00–13:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section pour la carte -->
+            <div class="map-section">
+                <div class="map-placeholder">
+                    Espace réservé pour la carte
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

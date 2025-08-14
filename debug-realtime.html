@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Temps Réel - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .debug-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100vh;
+        }
+
+        .widget-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            color: #333;
+        }
+
+        .debug-panel {
+            background: #2d2d2d;
+            border-radius: 16px;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .debug-header {
+            background: #38767d;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .debug-output {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .log-info { color: #61dafb; }
+        .log-success { color: #98fb98; }
+        .log-warning { color: #ffa500; }
+        .log-error { color: #ff6b6b; }
+        .log-data { color: #f0e68c; background: #2a2a2a; padding: 8px; }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .debug-btn {
+            background: #38767d;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .debug-btn:hover {
+            background: #4a8b92;
+            transform: translateY(-2px);
+        }
+
+        .debug-btn.active {
+            background: #e67e22;
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background: #38767d;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active {
+            background: #e67e22;
+        }
+
+        .status-panel {
+            background: #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            color: #98fb98;
+            font-weight: bold;
+        }
+
+        /* Styles pour le widget Bsport */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38767d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <!-- Panel Widget -->
+        <div class="widget-panel">
+            <div class="debug-header">
+                <h2>🎯 Widget Bsport - Test Temps Réel</h2>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">🏢 Toutes les salles</button>
+                <button class="filter-btn" data-filter="plessis-pole">💃 Plessis - Pole</button>
+                <button class="filter-btn" data-filter="plessis-aerial">🎪 Plessis - Aerial</button>
+                <button class="filter-btn" data-filter="saint-fargeau">🏛️ Saint-Fargeau</button>
+            </div>
+
+            <div class="status-panel">
+                <div class="status-item">
+                    <span>Statut Widget:</span>
+                    <span class="status-value" id="widgetStatus">Initialisation...</span>
+                </div>
+                <div class="status-item">
+                    <span>Filtre Actif:</span>
+                    <span class="status-value" id="activeFilter">Toutes les salles</span>
+                </div>
+                <div class="status-item">
+                    <span>Requêtes Réseau:</span>
+                    <span class="status-value" id="establishmentsCount">0 requêtes</span>
+                </div>
+            </div>
+
+            <!-- Widget Bsport -->
+            <div id="bsport-widget-debug">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Chargement du widget Bsport...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Debug -->
+        <div class="debug-panel">
+            <div class="debug-header">
+                <h2>🔍 Console Debug - Temps Réel</h2>
+            </div>
+
+            <div class="control-panel">
+                <button class="debug-btn" onclick="runManualAnalysis()">🔍 Analyse Manuelle</button>
+                <button class="debug-btn" onclick="clearDebugOutput()">🗑️ Vider Console</button>
+                <button class="debug-btn" onclick="exportResults()">📋 Exporter Résultats</button>
+                <button class="debug-btn" id="autoAnalysisBtn" onclick="toggleAutoAnalysis()">⚡ Auto-Analyse OFF</button>
+                <button class="debug-btn" onclick="testFilterClick()">🧪 Test Clic Filtre</button>
+                <button class="debug-btn" onclick="testButtonEvents()">🔍 Test Événements</button>
+                <button class="debug-btn" onclick="forceReloadWidget()">🔄 Force Reload</button>
+                <button class="debug-btn" onclick="testSimpleFilter()">🧪 Test Simple</button>
+                <button class="debug-btn" onclick="testNetworkRequests()">🌐 Test Réseau</button>
+                <button class="debug-btn" onclick="monitorNetworkActivity()">👁️ Surveiller Réseau</button>
+                <button class="debug-btn" onclick="resetCounters()">🔄 Reset Compteurs</button>
+                <button class="debug-btn" onclick="testUltraReload()">💥 Ultra Reload</button>
+                <button class="debug-btn" onclick="inspectWidget()">🔍 Inspecter Widget</button>
+                <button class="debug-btn" onclick="testAllFilters()">🎯 Test Tous Filtres</button>
+                <button class="debug-btn" onclick="testClientSideFilter()">🎨 Filtre Client</button>
+                <button class="debug-btn" onclick="analyzeWidgetContent()">🔬 Analyser Contenu</button>
+                <button class="debug-btn" onclick="highlightElements()">🎨 Surligner Éléments</button>
+                <button class="debug-btn" onclick="stopWidgetObserver()">👁️ Arrêter Observateur</button>
+                <button class="debug-btn" onclick="startWidgetObserver()">👁️ Démarrer Observateur</button>
+            </div>
+
+            <div class="debug-output" id="debugOutput">
+                <div class="log-entry log-info">🚀 Debug temps réel initialisé...</div>
+                <div class="log-entry log-info">🔧 En attente du chargement de BsportWidget...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bsport -->
+    <script id="insert-bsport-widget-cdn">
+        !function (b, s, p, o, r, t) { 
+            !typeof window.BsportWidget !== "undefined" && !document.getElementById("bsport-widget-cdn") && !function () { 
+                m = b.createElement(s), m.id = "bsport-widget-cdn", m.src = p, b.getElementsByTagName("head")[0].appendChild(m) 
+            }() 
+        }(document, "script", "https://cdn.bsport.io/scripts/widget.js")
+    </script>
+
+    <script>
+        // === SYSTÈME DE DEBUG TEMPS RÉEL ===
+        
+        let debugOutput = null;
+        let establishmentsFound = [];
+        let isAutoAnalysis = false;
+        let currentFilter = 'all';
+        let networkRequestCount = 0;
+        let lastRequestTime = null;
+        let previousWidgetContent = '';
+        let isReloading = false; // Ajout pour éviter les boucles infinies
+
+        // Configuration des salles avec IDs réels trouvés
+        const sallesConfig = {
+            all: {
+                name: "Toutes les salles",
+                establishments: []
+            },
+            "plessis-pole": {
+                name: "Le Plessis - Pole Dance", 
+                establishments: [1697] // ✅ ID trouvé
+            },
+            "plessis-aerial": {
+                name: "Le Plessis - Aerial Hoop",
+                establishments: [2421] // ✅ ID trouvé
+            },
+            "saint-fargeau": {
+                name: "Saint-Fargeau-Ponthierry",
+                establishments: [12450] // ✅ ID trouvé
+            }
+        };
+
+        // Configuration du widget Bsport
+        const widgetConfig = {
+            "parentElement": "bsport-widget-debug",
+            "companyId": 553,
+            "franchiseId": null,
+            "dialogMode": 1,
+            "widgetType": "calendar", 
+            "showFab": false,
+            "fullScreenPopup": false,
+            "styles": undefined,
+            "config": {
+                "calendar": {
+                    "groupSessionByPeriod": false,
+                    "variant": "activityName",
+                    "todayOnly": false,
+                    "compactMode": false,
+                    "establishments": []
+                }
+            }
+        };
+
+        // Fonction pour afficher les logs dans l'interface
+        function addDebugLog(message, type = 'info') {
+            if (!debugOutput) return;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            
+            debugOutput.appendChild(logEntry);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+
+        function addDebugData(title, data, type = 'data') {
+            if (!debugOutput) return;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<strong>${title}:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            
+            debugOutput.appendChild(logEntry);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+
+        // Compteur de requêtes pour vérifier l'activité (variables déjà déclarées plus haut)
+
+        // Interception des requêtes réseau
+        function setupNetworkInterception() {
+            addDebugLog('🌐 Configuration de l\'interception réseau...', 'info');
+
+            // Intercepter XMLHttpRequest
+            const originalXHR = window.XMLHttpRequest;
+            window.XMLHttpRequest = function() {
+                const xhr = new originalXHR();
+                const originalOpen = xhr.open;
+                const originalSend = xhr.send;
+                
+                xhr.open = function(method, url, ...args) {
+                    if (url.includes('bsport.io') || url.includes('bsport')) {
+                        networkRequestCount++;
+                        lastRequestTime = Date.now();
+                        addDebugLog(`📡 XHR #${networkRequestCount} interceptée: ${method} ${url}`, 'info');
+                        updateStatus('establishmentsCount', `${networkRequestCount} requêtes`);
+                    }
+                    return originalOpen.apply(this, [method, url, ...args]);
+                };
+                
+                xhr.send = function(data) {
+                    if (xhr._url && xhr._url.includes('bsport')) {
+                        xhr.addEventListener('load', function() {
+                            try {
+                                const responseData = JSON.parse(xhr.responseText);
+                                addDebugLog('📊 Réponse XHR reçue', 'success');
+                                
+                                // Analyser les établissements
+                                analyzeResponseData(responseData);
+                                
+                            } catch (e) {
+                                addDebugLog('📄 Réponse XHR non-JSON', 'warning');
+                            }
+                        });
+                    }
+                    return originalSend.apply(this, arguments);
+                };
+                
+                return xhr;
+            };
+
+            // Intercepter Fetch
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const url = args[0];
+                if (typeof url === 'string' && (url.includes('bsport.io') || url.includes('bsport'))) {
+                    networkRequestCount++;
+                    lastRequestTime = Date.now();
+                    addDebugLog(`📡 FETCH #${networkRequestCount} interceptée: ${url}`, 'info');
+                    updateStatus('establishmentsCount', `${networkRequestCount} requêtes`);
+                }
+                
+                return originalFetch.apply(this, args).then(response => {
+                    if (typeof url === 'string' && (url.includes('bsport.io') || url.includes('bsport'))) {
+                        response.clone().json().then(data => {
+                            addDebugLog('📊 Réponse FETCH reçue', 'success');
+                            analyzeResponseData(data);
+                        }).catch(() => {
+                            addDebugLog('📄 Réponse FETCH non-JSON', 'warning');
+                        });
+                    }
+                    return response;
+                });
+            };
+        }
+
+        // Analyser les données de réponse
+        function analyzeResponseData(data) {
+            // Chercher les établissements
+            if (data.establishments) {
+                addDebugLog(`🏢 ${data.establishments.length} établissement(s) trouvé(s)!`, 'success');
+                data.establishments.forEach((est, index) => {
+                    const info = `ID: ${est.id}, Nom: ${est.name || est.label || 'Sans nom'}`;
+                    addDebugLog(`  ${index + 1}. ${info}`, 'success');
+                    
+                    if (!establishmentsFound.find(e => e.id === est.id)) {
+                        establishmentsFound.push(est);
+                    }
+                });
+                updateEstablishmentsCount();
+            }
+
+            // Chercher dans les données imbriquées
+            if (data.data && data.data.establishments) {
+                addDebugData('🏢 Établissements (data)', data.data.establishments);
+            }
+
+            if (data.locations) {
+                addDebugData('📍 Locations', data.locations);
+            }
+
+            if (data.sites) {
+                addDebugData('🏭 Sites', data.sites);
+            }
+
+            // Afficher toutes les données pour analyse
+            if (Object.keys(data).length > 0) {
+                addDebugData('📋 Données complètes', data);
+            }
+        }
+
+        // Analyse manuelle du DOM
+        function runManualAnalysis() {
+            addDebugLog('🔍 === DÉBUT ANALYSE MANUELLE ===', 'info');
+            
+            const widget = document.getElementById('bsport-widget-debug');
+            if (!widget) {
+                addDebugLog('❌ Widget non trouvé', 'error');
+                return;
+            }
+
+            addDebugLog('📱 Analyse du contenu du widget...', 'info');
+            addDebugData('HTML du widget', widget.innerHTML.substring(0, 1000));
+            addDebugData('Texte du widget', widget.textContent.substring(0, 500));
+
+            // Chercher des éléments spécifiques
+            const elements = widget.querySelectorAll('*');
+            let foundElements = 0;
+
+            elements.forEach(el => {
+                // Chercher des data-attributes
+                if (el.dataset) {
+                    Object.keys(el.dataset).forEach(key => {
+                        if (key.toLowerCase().includes('establishment') || 
+                            key.toLowerCase().includes('location') ||
+                            key.toLowerCase().includes('site')) {
+                            addDebugLog(`🎯 Data attribute: ${key} = ${el.dataset[key]}`, 'success');
+                            foundElements++;
+                        }
+                    });
+                }
+                
+                // Chercher des textes avec noms de salles
+                const text = el.textContent;
+                if (text.length < 100 && (
+                    text.includes('Plessis') || 
+                    text.includes('Saint-Fargeau') || 
+                    text.includes('Aerial') || 
+                    text.includes('Pole') ||
+                    text.includes('Demon Spin')
+                )) {
+                    addDebugLog(`📍 Texte d'établissement: "${text}"`, 'success');
+                    addDebugLog(`   Classes: ${el.className}`, 'info');
+                    addDebugLog(`   ID: ${el.id}`, 'info');
+                    foundElements++;
+                }
+            });
+
+            // Analyser BsportWidget
+            if (window.BsportWidget) {
+                addDebugLog('🔧 Analyse de BsportWidget...', 'info');
+                addDebugData('BsportWidget objet', window.BsportWidget);
+            }
+
+            // Analyser le storage
+            addDebugLog('💾 Analyse du storage...', 'info');
+            let storageItems = 0;
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.toLowerCase().includes('bsport')) {
+                        addDebugLog(`  localStorage[${key}]: ${localStorage.getItem(key)}`, 'info');
+                        storageItems++;
+                    }
+                }
+                
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key.toLowerCase().includes('bsport')) {
+                        addDebugLog(`  sessionStorage[${key}]: ${sessionStorage.getItem(key)}`, 'info');
+                        storageItems++;
+                    }
+                }
+            } catch (e) {
+                addDebugLog(`❌ Erreur storage: ${e.message}`, 'error');
+            }
+
+            addDebugLog(`✅ Analyse terminée: ${foundElements} éléments DOM, ${storageItems} items storage`, 'success');
+        }
+
+        // Fonctions utilitaires
+        function clearDebugOutput() {
+            if (debugOutput) {
+                debugOutput.innerHTML = '<div class="log-entry log-info">🗑️ Console vidée</div>';
+            }
+        }
+
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                establishmentsFound: establishmentsFound,
+                logs: debugOutput ? debugOutput.textContent : 'Aucun log'
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `debug-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addDebugLog('📋 Résultats exportés', 'success');
+        }
+
+        function toggleAutoAnalysis() {
+            isAutoAnalysis = !isAutoAnalysis;
+            const btn = document.getElementById('autoAnalysisBtn');
+            btn.textContent = `⚡ Auto-Analyse ${isAutoAnalysis ? 'ON' : 'OFF'}`;
+            btn.className = `debug-btn ${isAutoAnalysis ? 'active' : ''}`;
+            
+            if (isAutoAnalysis) {
+                addDebugLog('⚡ Auto-analyse activée', 'info');
+                setInterval(() => {
+                    if (isAutoAnalysis) runManualAnalysis();
+                }, 5000);
+            } else {
+                addDebugLog('⚡ Auto-analyse désactivée', 'info');
+            }
+        }
+
+        function updateStatus(key, value) {
+            const element = document.getElementById(key);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+                 function updateEstablishmentsCount() {
+            updateStatus('establishmentsCount', establishmentsFound.length);
+        }
+
+        // Fonction pour comparer le contenu du widget
+        let widgetContentBeforeFilter = '';
+        
+        function saveWidgetContent() {
+            const widget = document.getElementById('bsport-widget-debug');
+            if (widget) {
+                widgetContentBeforeFilter = widget.innerHTML;
+                addDebugLog('📸 Contenu du widget sauvegardé pour comparaison', 'info');
+            }
+        }
+
+        function compareWidgetContent() {
+            const widget = document.getElementById('bsport-widget-debug');
+            if (widget && widgetContentBeforeFilter) {
+                const currentContent = widget.innerHTML;
+                const hasChanged = currentContent !== widgetContentBeforeFilter;
+                
+                addDebugLog(`🔍 Comparaison du contenu: ${hasChanged ? 'DIFFÉRENT' : 'IDENTIQUE'}`, hasChanged ? 'success' : 'warning');
+                
+                if (!hasChanged) {
+                    addDebugLog('⚠️ Le widget semble utiliser un cache!', 'warning');
+                    addDebugLog('💡 Solutions: Force Reload ou attendre le cache expire', 'info');
+                } else {
+                    addDebugLog('✅ Le filtrage a bien modifié le contenu!', 'success');
+                }
+                
+                return hasChanged;
+            }
+            return false;
+        }
+
+        // Fonctions de test pour debug
+        function testFilterClick() {
+            addDebugLog('🧪 === TEST MANUEL DU FILTRAGE ===', 'info');
+            addDebugLog('🔄 Test avec le filtre Pole Dance...', 'info');
+            handleFilterClick('plessis-pole');
+        }
+
+        function resetCounters() {
+            addDebugLog('🔄 === RESET DES COMPTEURS ===', 'info');
+            networkRequestCount = 0;
+            lastRequestTime = 0;
+            establishmentsFound = [];
+            widgetContentBeforeFilter = '';
+            updateStatus('establishmentsCount', '0 requêtes');
+            updateStatus('widgetStatus', 'Compteurs réinitialisés');
+            addDebugLog('✅ Tous les compteurs ont été réinitialisés', 'success');
+        }
+
+        function testButtonEvents() {
+            addDebugLog('🔍 === TEST DES ÉVÉNEMENTS DES BOUTONS ===', 'info');
+            
+            const buttons = document.querySelectorAll('.filter-btn');
+            addDebugLog(`📊 ${buttons.length} boutons trouvés`, 'info');
+            
+            buttons.forEach((btn, index) => {
+                const filterKey = btn.getAttribute('data-filter');
+                const buttonText = btn.textContent.trim();
+                const hasEventListener = btn.onclick || btn._listeners || false;
+                
+                addDebugLog(`  ${index + 1}. "${buttonText}":`, 'info');
+                addDebugLog(`     - data-filter: "${filterKey}"`, 'info');
+                addDebugLog(`     - Classes: "${btn.className}"`, 'info');
+                addDebugLog(`     - Événements: ${hasEventListener ? 'Attachés' : 'Vérification...'}`, 'info');
+                
+                // Test de clic programmatique
+                btn.style.border = '3px solid red';
+                setTimeout(() => {
+                    btn.style.border = '';
+                }, 2000);
+            });
+            
+            // Test de la configuration
+            addDebugLog('📋 Test de la configuration des salles:', 'info');
+            Object.keys(sallesConfig).forEach(key => {
+                const config = sallesConfig[key];
+                addDebugLog(`  - ${key}: ${config.name} [${config.establishments.join(', ')}]`, 'info');
+            });
+        }
+
+        function forceReloadWidget() {
+            if (isReloading) {
+                addDebugLog('⚠️ Un reload est déjà en cours...', 'warning');
+                return;
+            }
+
+            addDebugLog('🔄 === FORCE RELOAD MANUEL ===', 'info');
+            const config = sallesConfig[currentFilter];
+            if (config) {
+                tryCompleteDestruction(config);
+            } else {
+                addDebugLog('❌ Impossible de déterminer le filtre actuel', 'error');
+            }
+        }
+
+        // Test simple sans reload complexe
+        function testSimpleFilter() {
+            addDebugLog('🧪 === TEST SIMPLE SANS DESTRUCTION ===', 'info');
+            
+            if (!window.BsportWidget) {
+                addDebugLog('❌ BsportWidget non disponible', 'error');
+                return;
+            }
+
+            // Test avec le filtre Plessis-Pole
+            const config = sallesConfig['plessis-pole'];
+            addDebugLog(`🎯 Test avec: ${config.name}`, 'info');
+            addDebugLog(`📋 Établissements: [${config.establishments.join(', ')}]`, 'info');
+
+            // Sauvegarder le contenu actuel
+            saveWidgetContent();
+
+            // Nouvelle config simple
+            const testConfig = {
+                "parentElement": "bsport-widget-debug",
+                "companyId": 553,
+                "franchiseId": null,
+                "dialogMode": 1,
+                "widgetType": "calendar",
+                "showFab": false,
+                "fullScreenPopup": false,
+                "config": {
+                    "calendar": {
+                        "establishments": config.establishments,
+                        "variant": "activityName",
+                        "compactMode": false
+                    }
+                }
+            };
+
+            addDebugLog('📋 Config de test simple:', 'info');
+            addDebugData('Test Config', testConfig);
+
+            try {
+                // Appel direct sans complexité
+                window.BsportWidget.mount(testConfig);
+                addDebugLog('✅ Mount simple effectué', 'success');
+
+                // Vérifier après 3 secondes
+                setTimeout(() => {
+                    const hasWorked = checkIfFilterWorked();
+                    addDebugLog(`🔍 Résultat test simple: ${hasWorked ? 'SUCCÈS' : 'ÉCHEC'}`, hasWorked ? 'success' : 'warning');
+                    
+                    if (!hasWorked) {
+                        addDebugLog('💡 Le widget Bsport ne semble pas réagir aux remontages simples', 'info');
+                        addDebugLog('🔄 Cela confirme un problème de cache interne', 'warning');
+                    }
+                }, 3000);
+
+            } catch (error) {
+                addDebugLog(`❌ Erreur test simple: ${error.message}`, 'error');
+            }
+        }
+
+        // Ultra reload : destruction totale du script Bsport
+        function testUltraReload() {
+            addDebugLog('💥 === ULTRA RELOAD - DESTRUCTION SCRIPT ===', 'info');
+            
+            if (isReloading) {
+                addDebugLog('⚠️ Reload déjà en cours...', 'warning');
+                return;
+            }
+
+            isReloading = true;
+
+            try {
+                // Étape 1: Sauvegarder le contenu
+                saveWidgetContent();
+
+                // Étape 2: Supprimer tous les scripts Bsport
+                addDebugLog('🗑️ Suppression des scripts Bsport...', 'info');
+                const bsportScripts = document.querySelectorAll('script[src*="bsport"], script[id*="bsport"]');
+                addDebugLog(`📄 ${bsportScripts.length} scripts Bsport trouvés`, 'info');
+                bsportScripts.forEach(script => script.remove());
+
+                // Étape 3: Nettoyer window.BsportWidget
+                addDebugLog('🧹 Nettoyage de window.BsportWidget...', 'info');
+                delete window.BsportWidget;
+
+                // Étape 4: Vider complètement le widget
+                const widgetElement = document.getElementById('bsport-widget-debug');
+                if (widgetElement) {
+                    widgetElement.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p>Ultra Reload en cours...</p>
+                            <small>Rechargement complet du script</small>
+                        </div>
+                    `;
+                }
+
+                // Étape 5: Recharger le script Bsport
+                addDebugLog('🔄 Rechargement du script Bsport...', 'info');
+                const newScript = document.createElement('script');
+                newScript.src = 'https://cdn.bsport.io/scripts/widget.js';
+                newScript.id = 'bsport-widget-cdn-reload';
+                
+                newScript.onload = function() {
+                    addDebugLog('✅ Script Bsport rechargé', 'success');
+                    
+                    // Attendre que BsportWidget soit disponible
+                    let retries = 0;
+                    const checkBsport = () => {
+                        retries++;
+                        if (window.BsportWidget) {
+                            addDebugLog('✅ BsportWidget détecté après rechargement', 'success');
+                            
+                            // Remonter avec le filtre actuel
+                            setTimeout(() => {
+                                const config = sallesConfig['plessis-pole']; // Test avec Plessis-Pole
+                                const newConfig = {...widgetConfig};
+                                newConfig.config.calendar.establishments = config.establishments;
+                                newConfig._ultraReload = Date.now();
+
+                                addDebugLog('🚀 Remontage après ultra reload...', 'info');
+                                addDebugData('Ultra Config', newConfig);
+                                
+                                window.BsportWidget.mount(newConfig);
+                                addDebugLog('✅ Ultra reload terminé', 'success');
+                                
+                                isReloading = false;
+
+                                // Vérifier le résultat
+                                setTimeout(() => {
+                                    const hasWorked = checkIfFilterWorked();
+                                    addDebugLog(`🔍 Résultat ultra reload: ${hasWorked ? 'SUCCÈS' : 'ÉCHEC'}`, hasWorked ? 'success' : 'error');
+                                    
+                                    if (!hasWorked) {
+                                        addDebugLog('💀 Ultra reload a échoué - Le cache est au niveau serveur/CDN', 'error');
+                                        addDebugLog('💡 Solutions possibles:', 'info');
+                                        addDebugLog('   1. Changer de companyId temporairement', 'info');
+                                        addDebugLog('   2. Utiliser une URL de widget différente', 'info');
+                                        addDebugLog('   3. Le filtrage pourrait nécessiter une autre API', 'info');
+                                    }
+                                }, 3000);
+                                
+                            }, 1000);
+                        } else if (retries < 20) {
+                            setTimeout(checkBsport, 200);
+                        } else {
+                            addDebugLog('❌ BsportWidget non disponible après rechargement', 'error');
+                            isReloading = false;
+                        }
+                    };
+                    checkBsport();
+                };
+
+                newScript.onerror = function() {
+                    addDebugLog('❌ Erreur de rechargement du script', 'error');
+                    isReloading = false;
+                };
+
+                document.head.appendChild(newScript);
+
+            } catch (error) {
+                addDebugLog(`❌ Erreur ultra reload: ${error.message}`, 'error');
+                isReloading = false;
+            }
+        }
+
+        // Inspection détaillée du widget
+        function inspectWidget() {
+            addDebugLog('🔍 === INSPECTION DÉTAILLÉE DU WIDGET ===', 'info');
+            
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) {
+                addDebugLog('❌ Élément widget non trouvé', 'error');
+                return;
+            }
+
+            // Analyser la structure DOM
+            addDebugLog(`📏 HTML Length: ${widgetElement.innerHTML.length}`, 'info');
+            addDebugLog(`📄 Text Content Length: ${widgetElement.textContent.length}`, 'info');
+            
+            // Chercher des éléments spécifiques
+            const iframes = widgetElement.querySelectorAll('iframe');
+            const forms = widgetElement.querySelectorAll('form');
+            const calendars = widgetElement.querySelectorAll('[class*="calendar"], [class*="schedule"], [class*="planning"]');
+            
+            addDebugLog(`🖼️ IFrames trouvés: ${iframes.length}`, 'info');
+            addDebugLog(`📝 Forms trouvés: ${forms.length}`, 'info');
+            addDebugLog(`📅 Éléments calendrier: ${calendars.length}`, 'info');
+            
+            // Analyser les classes CSS
+            const allElements = widgetElement.querySelectorAll('*');
+            const classNames = new Set();
+            allElements.forEach(el => {
+                if (el.className && typeof el.className === 'string') {
+                    el.className.split(' ').forEach(cls => {
+                        if (cls.trim()) classNames.add(cls.trim());
+                    });
+                }
+            });
+            
+            addDebugLog(`🎨 Classes CSS uniques: ${classNames.size}`, 'info');
+            addDebugLog(`📋 Quelques classes: ${Array.from(classNames).slice(0, 10).join(', ')}`, 'info');
+            
+            // Chercher des indicateurs d'établissement
+            const textContent = widgetElement.textContent.toLowerCase();
+            const establishments = ['plessis', 'pole', 'aerial', 'saint-fargeau', 'ponthierry'];
+            const foundEstablishments = establishments.filter(est => textContent.includes(est));
+            
+            addDebugLog(`🏢 Établissements détectés dans le texte: ${foundEstablishments.length > 0 ? foundEstablishments.join(', ') : 'Aucun'}`, foundEstablishments.length > 0 ? 'success' : 'warning');
+            
+            // Vérifier s'il y a des erreurs ou messages
+            const errorElements = widgetElement.querySelectorAll('[class*="error"], [class*="warning"], [class*="empty"]');
+            if (errorElements.length > 0) {
+                addDebugLog(`⚠️ ${errorElements.length} éléments d'erreur/warning trouvés`, 'warning');
+                errorElements.forEach((el, i) => {
+                    addDebugLog(`   ${i+1}. ${el.textContent.substring(0, 100)}`, 'warning');
+                });
+            }
+            
+            // Échantillon du contenu
+            const sample = widgetElement.textContent.substring(0, 300);
+            addDebugLog(`📖 Échantillon du contenu:`, 'info');
+            addDebugLog(`"${sample}${sample.length === 300 ? '...' : ''}"`, 'info');
+        }
+
+        // Test de tous les filtres en séquence
+        function testAllFilters() {
+            addDebugLog('🎯 === TEST DE TOUS LES FILTRES ===', 'info');
+            
+            const filters = Object.keys(sallesConfig);
+            let currentIndex = 0;
+            
+            function testNextFilter() {
+                if (currentIndex >= filters.length) {
+                    addDebugLog('🏁 Test de tous les filtres terminé', 'success');
+                    return;
+                }
+                
+                const filterKey = filters[currentIndex];
+                const config = sallesConfig[filterKey];
+                
+                addDebugLog(`🔄 Test ${currentIndex + 1}/${filters.length}: ${config.name}`, 'info');
+                
+                // Sauvegarder l'état avant
+                const beforeContent = document.getElementById('bsport-widget-debug')?.textContent || '';
+                const beforeLength = beforeContent.length;
+                
+                // Appliquer le filtre
+                const newConfig = {...widgetConfig};
+                newConfig.config.calendar.establishments = config.establishments;
+                newConfig._testSequence = currentIndex;
+                
+                try {
+                    window.BsportWidget.mount(newConfig);
+                    addDebugLog(`✅ Mount ${filterKey} effectué`, 'success');
+                    
+                    // Vérifier après 2 secondes
+                    setTimeout(() => {
+                        const afterContent = document.getElementById('bsport-widget-debug')?.textContent || '';
+                        const afterLength = afterContent.length;
+                        const hasChanged = Math.abs(afterLength - beforeLength) > 50 || afterContent !== beforeContent;
+                        
+                        addDebugLog(`📊 ${filterKey}: Avant=${beforeLength} chars, Après=${afterLength} chars, Changé=${hasChanged ? 'OUI' : 'NON'}`, hasChanged ? 'success' : 'warning');
+                        
+                        currentIndex++;
+                        setTimeout(testNextFilter, 1000);
+                    }, 2000);
+                    
+                } catch (error) {
+                    addDebugLog(`❌ Erreur ${filterKey}: ${error.message}`, 'error');
+                    currentIndex++;
+                    setTimeout(testNextFilter, 1000);
+                }
+            }
+            
+            // Démarrer la séquence
+            saveWidgetContent();
+            testNextFilter();
+        }
+
+        // Analyse approfondie du contenu du widget
+        function analyzeWidgetContent() {
+            addDebugLog('🔬 === ANALYSE DÉTAILLÉE DU CONTENU ===', 'info');
+            
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) {
+                addDebugLog('❌ Widget non trouvé', 'error');
+                return;
+            }
+
+            // Chercher tous les éléments qui contiennent du texte
+            const allTextElements = [];
+            const walker = document.createTreeWalker(
+                widgetElement,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.textContent.trim().length > 2) {
+                    allTextElements.push({
+                        text: node.textContent.trim(),
+                        parent: node.parentElement
+                    });
+                }
+            }
+
+            addDebugLog(`📄 ${allTextElements.length} éléments texte trouvés`, 'info');
+
+            // Chercher des mentions d'établissements
+            const establishments = {
+                'plessis': [],
+                'pole': [],
+                'aerial': [],
+                'saint-fargeau': [],
+                'ponthierry': []
+            };
+
+            allTextElements.forEach((element, index) => {
+                const text = element.text.toLowerCase();
+                Object.keys(establishments).forEach(est => {
+                    if (text.includes(est)) {
+                        establishments[est].push({
+                            index,
+                            text: element.text,
+                            element: element.parent
+                        });
+                    }
+                });
+            });
+
+            // Afficher les résultats
+            Object.keys(establishments).forEach(est => {
+                const count = establishments[est].length;
+                addDebugLog(`🏢 "${est}": ${count} mentions trouvées`, count > 0 ? 'success' : 'info');
+                
+                if (count > 0 && count <= 5) {
+                    establishments[est].forEach((item, i) => {
+                        addDebugLog(`   ${i+1}. "${item.text.substring(0, 50)}..."`, 'info');
+                    });
+                }
+            });
+
+            // Chercher des patterns de cours/sessions
+            const coursePatterns = [
+                /\d{1,2}[h:]\d{2}/g, // Heures (ex: 18:30, 18h30)
+                /lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/gi, // Jours
+                /janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre/gi, // Mois
+                /\d{1,2}\/\d{1,2}/g, // Dates (ex: 15/01)
+                /pole|aerial|hoop|lyra|tissu/gi // Types de cours
+            ];
+
+            let totalMatches = 0;
+            coursePatterns.forEach((pattern, i) => {
+                const matches = widgetElement.textContent.match(pattern) || [];
+                totalMatches += matches.length;
+                addDebugLog(`📅 Pattern ${i+1}: ${matches.length} matches`, 'info');
+            });
+
+            addDebugLog(`📊 Total éléments de planning détectés: ${totalMatches}`, 'info');
+
+            // Stocker pour usage ultérieur
+            window.widgetAnalysis = {
+                establishments,
+                allTextElements,
+                totalMatches
+            };
+
+            addDebugLog('💾 Analyse stockée dans window.widgetAnalysis', 'success');
+        }
+
+        // Test de filtrage côté client
+        function testClientSideFilter() {
+            addDebugLog('🎨 === TEST FILTRAGE CÔTÉ CLIENT ===', 'info');
+            
+            // D'abord analyser le contenu si pas encore fait
+            if (!window.widgetAnalysis) {
+                addDebugLog('🔬 Analyse du contenu en cours...', 'info');
+                analyzeWidgetContent();
+                
+                setTimeout(() => {
+                    testClientSideFilter();
+                }, 1000);
+                return;
+            }
+
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) {
+                addDebugLog('❌ Widget non trouvé', 'error');
+                return;
+            }
+
+            // Test: masquer tous les éléments contenant "saint-fargeau"
+            addDebugLog('🎯 Test: masquer les éléments "saint-fargeau"', 'info');
+            
+            const saintFargeauElements = window.widgetAnalysis.establishments['saint-fargeau'] || [];
+            let hiddenCount = 0;
+
+            saintFargeauElements.forEach(item => {
+                if (item.element) {
+                    // NOUVELLE LOGIQUE UNIFIÉE - identique au surlignage
+                    let elementToHide = item.element;
+                    
+                    // Strategy 1: Chercher spécifiquement les bs-week-card comme dans le surlignage
+                    let attempts = 0;
+                    while (elementToHide && elementToHide !== widgetElement && attempts < 10) {
+                        const className = elementToHide.className || '';
+                        const tagName = elementToHide.tagName || '';
+                        
+                        // PRIORITÉ ABSOLUE: bs-week-card (c'est exactement ce que le surlignage trouve)
+                        if (className.includes('bs-week-card')) {
+                            addDebugLog(`✅ Trouvé bs-week-card pour "${item.text.substring(0, 30)}..."`, 'success');
+                            break;
+                        }
+                        
+                        elementToHide = elementToHide.parentElement;
+                        attempts++;
+                    }
+
+                    if (elementToHide && elementToHide !== widgetElement) {
+                        elementToHide.style.display = 'none';
+                        elementToHide.setAttribute('data-hidden-by-filter', 'saint-fargeau');
+                        hiddenCount++;
+                        addDebugLog(`👻 Masqué: ${elementToHide.tagName}.${elementToHide.className}`, 'success');
+                    }
+                }
+            });
+
+            addDebugLog(`✅ ${hiddenCount} éléments masqués`, hiddenCount > 0 ? 'success' : 'warning');
+        }
+
+        // Fonction pour restaurer tous les éléments masqués
+        function restoreHiddenElements() {
+            addDebugLog('🔄 Restauration des éléments masqués...', 'info');
+            
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) return;
+
+            // Restaurer les éléments masqués
+            const hiddenElements = widgetElement.querySelectorAll('[data-hidden-by-filter]');
+            hiddenElements.forEach(el => {
+                el.style.display = '';
+                el.removeAttribute('data-hidden-by-filter');
+            });
+
+            addDebugLog(`✅ ${hiddenElements.length} éléments restaurés`, 'success');
+        }
+
+        // Fonction principale de gestion des clics
+        function handleFilterClick(filterKey) {
+            addDebugLog(`🖱️ === CLIC BOUTON DÉTECTÉ ===`, 'info');
+            addDebugLog(`📋 FilterKey reçu: "${filterKey}"`, 'info');
+            addDebugLog(`📋 Current filter: "${currentFilter}"`, 'info');
+
+            const config = sallesConfig[filterKey];
+            if (!config) {
+                addDebugLog(`❌ Configuration non trouvée pour: ${filterKey}`, 'error');
+                return;
+            }
+
+            if (currentFilter === filterKey) {
+                addDebugLog(`⚠️ Filtre déjà actif: ${config.name}`, 'warning');
+                return;
+            }
+
+            addDebugLog(`✅ Configuration trouvée: ${config.name}`, 'success');
+
+            // Mettre à jour les boutons
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                const btnFilterKey = btn.getAttribute('data-filter');
+                if (btnFilterKey === filterKey) {
+                    btn.classList.add('active');
+                    addDebugLog(`✅ Bouton activé: ${btn.textContent}`, 'success');
+                }
+            });
+
+            // Mettre à jour le statut
+            try {
+                updateStatus('activeFilter', config.name);
+                addDebugLog(`📊 Statut mis à jour: ${config.name}`, 'success');
+            } catch (error) {
+                addDebugLog(`❌ Erreur mise à jour statut: ${error.message}`, 'error');
+            }
+
+            // Changer le filtre actuel
+            currentFilter = filterKey;
+            addDebugLog(`🔄 currentFilter mis à jour: "${currentFilter}"`, 'success');
+
+            // NOUVELLE APPROCHE: Filtrage côté client
+            addDebugLog(`🎨 === DÉBUT FILTRAGE CÔTÉ CLIENT ===`, 'info');
+            try {
+                applyClientSideFilter(filterKey);
+                addDebugLog(`🎨 applyClientSideFilter terminé sans erreur`, 'success');
+            } catch (error) {
+                addDebugLog(`❌ Erreur dans applyClientSideFilter: ${error.message}`, 'error');
+            }
+
+            addDebugLog(`🏁 === FIN TRAITEMENT CLIC ===`, 'info');
+        }
+
+        // Fonction principale de filtrage côté client
+        function applyClientSideFilter(filterKey) {
+            addDebugLog(`🎨 Application du filtre côté client: ${filterKey}`, 'info');
+            
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) {
+                addDebugLog('❌ Widget non trouvé', 'error');
+                return;
+            }
+
+            // D'abord restaurer tous les éléments
+            restoreHiddenElements();
+
+            if (filterKey === 'all') {
+                addDebugLog('✅ Filtre "Toutes les salles" - tous les éléments visibles', 'success');
+                return;
+            }
+
+            // Analyser le contenu si nécessaire
+            if (!window.widgetAnalysis) {
+                addDebugLog('🔬 Analyse du contenu nécessaire...', 'info');
+                analyzeWidgetContent();
+                
+                setTimeout(() => {
+                    applyClientSideFilter(filterKey);
+                }, 1000);
+                return;
+            }
+
+            // Définir quels établissements masquer selon le filtre
+            const filterMapping = {
+                'plessis-pole': ['saint-fargeau', 'ponthierry', 'aerial'],
+                'plessis-aerial': ['saint-fargeau', 'ponthierry', 'pole'],
+                'saint-fargeau': ['plessis', 'pole', 'aerial']
+            };
+
+            const toHide = filterMapping[filterKey] || [];
+            addDebugLog(`🎯 Masquage des établissements: ${toHide.join(', ')}`, 'info');
+
+            let totalHidden = 0;
+
+            toHide.forEach(establishment => {
+                const elements = window.widgetAnalysis.establishments[establishment] || [];
+                
+                elements.forEach(item => {
+                    if (item.element) {
+                        // Chercher spécifiquement bs-week-card d'abord
+                        let elementToHide = item.element;
+                        
+                        let attempts = 0;
+                        while (elementToHide && elementToHide !== widgetElement && attempts < 10) {
+                            const className = elementToHide.className || '';
+                            
+                            if (className.includes('bs-week-card')) {
+                                addDebugLog(`✅ Trouvé bs-week-card pour "${item.text.substring(0, 30)}..."`, 'success');
+                                break;
+                            }
+                            
+                            elementToHide = elementToHide.parentElement;
+                            attempts++;
+                        }
+
+                        if (elementToHide && elementToHide !== widgetElement && elementToHide.className.includes('bs-week-card')) {
+                            elementToHide.style.display = 'none';
+                            elementToHide.setAttribute('data-hidden-by-filter', establishment);
+                            totalHidden++;
+                            
+                            const height = elementToHide.offsetHeight || 0;
+                            const width = elementToHide.offsetWidth || 0;
+                            addDebugLog(`👻 Masqué: ${elementToHide.tagName}.${elementToHide.className} (${width}x${height}px)`, 'success');
+                        }
+                    }
+                });
+            });
+
+            addDebugLog(`✅ Filtrage terminé: ${totalHidden} éléments masqués`, totalHidden > 0 ? 'success' : 'warning');
+
+            // Démarrer l'observation pour réappliquer le filtre si le contenu change
+            startWidgetObserver();
+        }
+
+        // Variable pour stocker l'observateur
+        let widgetObserver = null;
+        let lastWidgetContent = '';
+
+        // Fonction pour observer les changements dans le widget
+        function startWidgetObserver() {
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) return;
+
+            // Arrêter l'observateur précédent s'il existe
+            if (widgetObserver) {
+                widgetObserver.disconnect();
+            }
+
+            // Sauvegarder le contenu actuel
+            lastWidgetContent = widgetElement.innerHTML;
+
+            // Créer un nouvel observateur
+            widgetObserver = new MutationObserver((mutations) => {
+                let contentChanged = false;
+
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        contentChanged = true;
+                    }
+                });
+
+                if (contentChanged) {
+                    const newContent = widgetElement.innerHTML;
+                    if (newContent !== lastWidgetContent && newContent.length > 1000) {
+                        addDebugLog('🔄 Changement détecté dans le widget', 'info');
+                        
+                        lastWidgetContent = newContent;
+                        
+                        // Réappliquer le filtre actuel après un délai
+                        if (currentFilter !== 'all') {
+                            addDebugLog(`🔄 Réapplication du filtre: ${currentFilter}`, 'info');
+                            
+                            setTimeout(() => {
+                                // Réanalyser le contenu car il a changé
+                                window.widgetAnalysis = null;
+                                applyClientSideFilter(currentFilter);
+                            }, 1500);
+                        }
+                    }
+                }
+            });
+
+            // Commencer l'observation
+            widgetObserver.observe(widgetElement, {
+                childList: true,
+                subtree: true
+            });
+
+            addDebugLog('👁️ Observateur du widget démarré', 'success');
+        }
+
+        // Fonction pour arrêter l'observateur
+        function stopWidgetObserver() {
+            if (widgetObserver) {
+                widgetObserver.disconnect();
+                widgetObserver = null;
+                addDebugLog('👁️ Observateur du widget arrêté', 'info');
+            }
+        }
+
+        // Section supprimée - fonctions nettoyées et reconstruites
+
+        function analyzeWidgetContent() {
+                    if (elementToHide === item.element || attempts >= 10 || !elementToHide.className.includes('bs-week-card')) {
+                        addDebugLog(`🔍 Strategy 2: Recherche par taille pour "${item.text.substring(0, 30)}..."`, 'info');
+                        
+                        let current = item.element;
+                        for (let level = 0; level < 8; level++) {
+                            if (current && current.parentElement) {
+                                current = current.parentElement;
+                                
+                                // Chercher un élément plus grand (case complète)
+                                const height = current.offsetHeight || 0;
+                                const width = current.offsetWidth || 0;
+                                const className = current.className || '';
+                                
+                                // Taille minimale pour une case de planning complète
+                                if (height >= 60 && width >= 200) {
+                                    elementToHide = current;
+                                    addDebugLog(`✅ Trouvé conteneur par taille: ${height}x${width}px, classe: ${className}`, 'success');
+                                    break;
+                                }
+                                
+                                // Ou si c'est une classe spécifique même si plus petit
+                                if (className.includes('bs-week-card') || className.includes('bs-offer')) {
+                                    elementToHide = current;
+                                    addDebugLog(`✅ Trouvé conteneur par classe: ${className}`, 'success');
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Strategy 3: Fallback - au minimum 60px de hauteur
+                    if (elementToHide === item.element || (elementToHide.offsetHeight || 0) < 60) {
+                        let parent = item.element.parentElement;
+                        while (parent && parent !== widgetElement) {
+                            if ((parent.offsetHeight || 0) >= 60 && (parent.offsetWidth || 0) >= 150) {
+                                elementToHide = parent;
+                                addDebugLog(`✅ Fallback trouvé: ${parent.offsetHeight}x${parent.offsetWidth}px`, 'info');
+                                break;
+                            }
+                            parent = parent.parentElement;
+                        }
+                    }
+
+                    if (elementToHide && elementToHide !== widgetElement) {
+                        // Vérifier la taille finale
+                        const finalHeight = elementToHide.offsetHeight || 0;
+                        const finalWidth = elementToHide.offsetWidth || 0;
+                        const elementSize = finalHeight * finalWidth;
+                        const widgetSize = widgetElement.offsetHeight * widgetElement.offsetWidth;
+                        
+                        // Ne masquer que si c'est assez grand pour être une vraie case mais pas trop grand
+                        if (finalHeight >= 50 && finalWidth >= 100 && elementSize < widgetSize * 0.8) {
+                            elementToHide.style.display = 'none';
+                            elementToHide.setAttribute('data-hidden-by-filter', establishment);
+                            totalHidden++;
+                            
+                            addDebugLog(`👻 Masqué: ${elementToHide.tagName}.${elementToHide.className} (${finalWidth}x${finalHeight}px)`, 'success');
+                        } else {
+                            addDebugLog(`⚠️ Élément ignoré (trop petit ou trop grand): ${finalWidth}x${finalHeight}px`, 'warning');
+                        }
+                    } else {
+                        addDebugLog(`⚠️ Impossible de trouver conteneur approprié pour: "${item.text.substring(0, 30)}..."`, 'warning');
+                    }
+                }
+            });
+
+            addDebugLog(`✅ Filtrage terminé: ${totalHidden} éléments masqués`, totalHidden > 0 ? 'success' : 'warning');
+
+            if (totalHidden === 0) {
+                addDebugLog('💡 Aucun élément masqué - le widget pourrait ne pas contenir de cours pour ces établissements', 'info');
+                addDebugLog('🔍 Ou la structure DOM ne permet pas le filtrage automatique', 'warning');
+            }
+
+            // NOUVEAU: Démarrer l'observation pour réappliquer le filtre si le contenu change
+            startWidgetObserver();
+        }
+
+        // Variable pour stocker l'observateur
+        let widgetObserver = null;
+        let lastWidgetContent = '';
+
+        // Fonction pour observer les changements dans le widget
+        function startWidgetObserver() {
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) return;
+
+            // Arrêter l'observateur précédent s'il existe
+            if (widgetObserver) {
+                widgetObserver.disconnect();
+            }
+
+            // Sauvegarder le contenu actuel
+            lastWidgetContent = widgetElement.innerHTML;
+
+            // Créer un nouvel observateur
+            widgetObserver = new MutationObserver((mutations) => {
+                let contentChanged = false;
+
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        contentChanged = true;
+                    }
+                });
+
+                if (contentChanged) {
+                    const newContent = widgetElement.innerHTML;
+                    if (newContent !== lastWidgetContent && newContent.length > 1000) {
+                        addDebugLog('🔄 Changement détecté dans le widget (navigation semaine?)', 'info');
+                        addDebugLog(`📏 Nouveau contenu: ${newContent.length} chars`, 'info');
+                        
+                        lastWidgetContent = newContent;
+                        
+                        // Réappliquer le filtre actuel après un délai
+                        if (currentFilter !== 'all') {
+                            addDebugLog(`🔄 Réapplication du filtre: ${currentFilter}`, 'info');
+                            
+                            setTimeout(() => {
+                                // Réanalyser le contenu car il a changé
+                                window.widgetAnalysis = null;
+                                applyClientSideFilter(currentFilter);
+                            }, 1500); // Délai pour laisser le widget se stabiliser
+                        }
+                    }
+                }
+            });
+
+            // Commencer l'observation
+            widgetObserver.observe(widgetElement, {
+                childList: true,
+                subtree: true
+            });
+
+            addDebugLog('👁️ Observateur du widget démarré', 'success');
+        }
+
+        // Fonction pour arrêter l'observateur
+        function stopWidgetObserver() {
+            if (widgetObserver) {
+                widgetObserver.disconnect();
+                widgetObserver = null;
+                addDebugLog('👁️ Observateur du widget arrêté', 'info');
+            }
+        }
+
+        // Fonction pour surligner visuellement les éléments trouvés
+        function highlightElements() {
+            addDebugLog('🎨 === SURLIGNAGE DES ÉLÉMENTS ===', 'info');
+            
+            if (!window.widgetAnalysis) {
+                addDebugLog('🔬 Analyse du contenu nécessaire...', 'info');
+                analyzeWidgetContent();
+                setTimeout(highlightElements, 1000);
+                return;
+            }
+
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (!widgetElement) return;
+
+            // Supprimer les anciens surlignages
+            widgetElement.querySelectorAll('[data-highlighted]').forEach(el => {
+                el.style.border = '';
+                el.style.backgroundColor = '';
+                el.removeAttribute('data-highlighted');
+            });
+
+            const colors = {
+                'plessis': 'rgba(255, 0, 0, 0.3)', // Rouge
+                'pole': 'rgba(0, 255, 0, 0.3)',    // Vert
+                'aerial': 'rgba(0, 0, 255, 0.3)',  // Bleu
+                'saint-fargeau': 'rgba(255, 255, 0, 0.3)', // Jaune
+                'ponthierry': 'rgba(255, 0, 255, 0.3)'     // Magenta
+            };
+
+            Object.keys(window.widgetAnalysis.establishments).forEach(establishment => {
+                const elements = window.widgetAnalysis.establishments[establishment] || [];
+                const color = colors[establishment] || 'rgba(128, 128, 128, 0.3)';
+                
+                addDebugLog(`🎨 Surlignage "${establishment}": ${elements.length} éléments`, 'info');
+                
+                elements.forEach((item, index) => {
+                    if (item.element) {
+                        // Trouver l'élément à surligner avec la même logique que le masquage
+                        let elementToHighlight = item.element;
+                        
+                        // Même logique que dans applyClientSideFilter
+                        let attempts = 0;
+                        while (elementToHighlight && elementToHighlight !== widgetElement && attempts < 10) {
+                            const className = elementToHighlight.className || '';
+                            const tagName = elementToHighlight.tagName || '';
+                            
+                            if (
+                                className.includes('session') || 
+                                className.includes('course') || 
+                                className.includes('event') ||
+                                className.includes('offer') ||
+                                className.includes('booking') ||
+                                className.includes('card') ||
+                                className.includes('item') ||
+                                className.includes('entry') ||
+                                className.includes('slot') ||
+                                className.includes('row') ||
+                                tagName === 'LI' ||
+                                tagName === 'TR' ||
+                                tagName === 'ARTICLE' ||
+                                (tagName === 'DIV' && (
+                                    className.includes('bs-') ||
+                                    className.includes('calendar') ||
+                                    className.includes('schedule')
+                                )) ||
+                                (elementToHighlight.offsetHeight > 50 && elementToHighlight.offsetWidth > 100)
+                            ) {
+                                break;
+                            }
+                            elementToHighlight = elementToHighlight.parentElement;
+                            attempts++;
+                        }
+
+                        // Fallback si pas trouvé
+                        if (elementToHighlight === item.element) {
+                            let parent = item.element.parentElement;
+                            while (parent && parent !== widgetElement) {
+                                if (parent.offsetHeight > 30 && parent.offsetWidth > 80) {
+                                    elementToHighlight = parent;
+                                    break;
+                                }
+                                parent = parent.parentElement;
+                            }
+                        }
+
+                        if (elementToHighlight && elementToHighlight !== widgetElement) {
+                            elementToHighlight.style.border = `3px solid ${color.replace('0.3', '1')}`;
+                            elementToHighlight.style.backgroundColor = color;
+                            elementToHighlight.setAttribute('data-highlighted', establishment);
+                            
+                            addDebugLog(`🎨 Surligné ${establishment} #${index+1}: ${elementToHighlight.tagName}.${elementToHighlight.className}`, 'success');
+                        }
+                    }
+                });
+            });
+
+            addDebugLog('✅ Surlignage terminé - vous devriez voir les éléments colorés', 'success');
+            addDebugLog('💡 Cliquez à nouveau pour enlever le surlignage', 'info');
+        }
+
+        function testNetworkRequests() {
+            addDebugLog('🌐 === TEST DES REQUÊTES RÉSEAU ===', 'info');
+            
+            // Simuler une requête vers l'API Bsport
+            const testUrl = 'https://api.production.bsport.io/book/v1/offer/?company=553&establishments=1697';
+            
+            addDebugLog(`📡 Test de requête vers: ${testUrl}`, 'info');
+            
+            fetch(testUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => {
+                addDebugLog(`✅ Réponse reçue: ${response.status}`, 'success');
+                return response.json();
+            })
+            .then(data => {
+                addDebugLog('📊 Données de test reçues:', 'success');
+                addDebugData('Test API Response', data);
+            })
+            .catch(error => {
+                addDebugLog(`❌ Erreur réseau: ${error.message}`, 'error');
+                addDebugLog('💡 Probablement un problème CORS - normal pour un test direct', 'info');
+            });
+            
+            // Vérifier si les intercepteurs fonctionnent
+            addDebugLog('🔍 Test des intercepteurs réseau...', 'info');
+            addDebugLog('📊 Intercepteurs configurés:', 'info');
+                         addDebugLog(`  - XMLHttpRequest: ${window.XMLHttpRequest !== XMLHttpRequest ? 'Modifié' : 'Original'}`, 'info');
+             addDebugLog(`  - fetch: ${window.fetch !== fetch ? 'Modifié' : 'Original'}`, 'info');
+         }
+
+         function monitorNetworkActivity() {
+             addDebugLog('👁️ === SURVEILLANCE RÉSEAU ACTIVÉE ===', 'info');
+             
+             const initialCount = networkRequestCount;
+             const initialTime = Date.now();
+             
+             // Surveiller pendant 10 secondes
+             const monitorInterval = setInterval(() => {
+                 const currentCount = networkRequestCount;
+                 const timeSinceStart = Date.now() - initialTime;
+                 const timeSinceLastRequest = Date.now() - lastRequestTime;
+                 
+                 addDebugLog(`📊 Surveillance: ${currentCount - initialCount} nouvelles requêtes en ${Math.round(timeSinceStart/1000)}s`, 'info');
+                 
+                 if (timeSinceLastRequest > 5000 && currentCount === initialCount) {
+                     addDebugLog('⚠️ AUCUNE NOUVELLE REQUÊTE détectée!', 'warning');
+                     addDebugLog('💡 Le widget pourrait utiliser un cache ou ne pas se recharger', 'warning');
+                 }
+                 
+                 if (timeSinceStart > 10000) {
+                     clearInterval(monitorInterval);
+                     addDebugLog(`✅ Surveillance terminée: ${currentCount - initialCount} requêtes au total`, 'info');
+                 }
+             }, 2000);
+         }
+
+        // Ancienne fonction handleFilterClick supprimée - utilise maintenant celle avec filtrage côté client
+        // Anciennes fonctions de remontage supprimées - utilise maintenant le filtrage côté client
+
+        // Note: Les fonctions applyFilterWithMultipleMethods, trySimpleRemount, tryCompleteDestruction 
+        // ne sont plus utilisées car remplacées par applyClientSideFilter
+
+        // Section supprimée - contenait du code dupliqué/erroné
+
+        function checkIfFilterWorked() {
+            const currentContent = document.getElementById('bsport-widget-debug')?.innerHTML || '';
+            const hasChanged = currentContent !== previousWidgetContent && currentContent.length > 100;
+            
+            addDebugLog(`🔍 Vérification du filtrage:`, 'info');
+            addDebugLog(`📏 Longueur contenu actuel: ${currentContent.length}`, 'info');
+            addDebugLog(`📏 Longueur contenu précédent: ${previousWidgetContent.length}`, 'info');
+            addDebugLog(`🔄 Contenu a changé: ${hasChanged ? 'OUI' : 'NON'}`, hasChanged ? 'success' : 'warning');
+            
+            return hasChanged;
+        }
+
+        function trySimpleRemount(config) {
+            return new Promise((resolve, reject) => {
+                try {
+                    addDebugLog('🔄 Méthode 1: Remontage simple...', 'info');
+                    
+                    if (!window.BsportWidget) {
+                        reject(new Error('BsportWidget non disponible'));
+                        return;
+                    }
+
+                    // Sauvegarder le contenu actuel
+                    saveWidgetContent();
+
+                    // Créer nouvelle config
+                    const newConfig = {...widgetConfig};
+                    newConfig.config.calendar.establishments = config.establishments;
+                    newConfig._timestamp = Date.now(); // Cache buster
+
+                    addDebugLog('📋 Configuration préparée:', 'info');
+                    addDebugData('Config pour méthode 1', newConfig);
+
+                    // Remonter directement
+                    window.BsportWidget.mount(newConfig);
+                    addDebugLog('✅ Remontage simple effectué', 'success');
+                    
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function tryCompleteDestruction(config) {
+            return new Promise((resolve, reject) => {
+                try {
+                    isReloading = true; // Marquer comme en cours de reload
+                    
+                    addDebugLog('🔄 Méthode 2: Destruction complète...', 'info');
+                    
+                    const widgetElement = document.getElementById('bsport-widget-debug');
+                    if (!widgetElement) {
+                        reject(new Error('Élément widget non trouvé'));
+                        return;
+                    }
+
+                    // Étape 1: Vider complètement
+                    addDebugLog('🗑️ Vidage complet du widget...', 'info');
+                    widgetElement.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p>Rechargement en cours...</p>
+                            <small>Méthode 2: Destruction complète</small>
+                        </div>
+                    `;
+
+                    // Étape 2: Attendre puis recréer l'élément
+                    setTimeout(() => {
+                        addDebugLog('🔧 Recréation de l\'élément...', 'info');
+                        
+                        // Créer un nouvel élément
+                        const newWidgetElement = document.createElement('div');
+                        newWidgetElement.id = 'bsport-widget-debug';
+                        newWidgetElement.className = 'widget-container';
+                        
+                        // Remplacer l'ancien élément
+                        widgetElement.parentNode.replaceChild(newWidgetElement, widgetElement);
+                        
+                        addDebugLog('✅ Nouvel élément créé', 'success');
+
+                        // Étape 3: Remonter avec la nouvelle config
+                        setTimeout(() => {
+                            try {
+                                const newConfig = {...widgetConfig};
+                                newConfig.config.calendar.establishments = config.establishments;
+                                newConfig._forceReload = Date.now();
+                                newConfig._method = 'destruction';
+
+                                addDebugLog('📋 Remontage avec nouvelle config:', 'info');
+                                addDebugData('Config pour méthode 2', newConfig);
+
+                                window.BsportWidget.mount(newConfig);
+                                addDebugLog('✅ Widget remonté après destruction', 'success');
+
+                                // Marquer la fin du reload
+                                setTimeout(() => {
+                                    isReloading = false;
+                                    addDebugLog('🏁 Reload terminé', 'success');
+                                    
+                                    // Vérifier le résultat
+                                    setTimeout(() => {
+                                        if (checkIfFilterWorked()) {
+                                            addDebugLog('✅ Méthode 2 a fonctionné!', 'success');
+                                        } else {
+                                            addDebugLog('⚠️ Méthode 2 aussi échouée - Le widget Bsport peut avoir un cache très persistant', 'warning');
+                                            addDebugLog('💡 Suggestion: Essayez de fermer/rouvrir la page ou videz le cache du navigateur', 'info');
+                                        }
+                                    }, 3000);
+                                }, 2000);
+
+                                resolve();
+                            } catch (mountError) {
+                                isReloading = false;
+                                addDebugLog(`❌ Erreur remontage méthode 2: ${mountError.message}`, 'error');
+                                reject(mountError);
+                            }
+                        }, 1000);
+                    }, 1000);
+
+                } catch (error) {
+                    isReloading = false;
+                    reject(error);
+                }
+            });
+        }
+
+        function checkIfFilterWorked() {
+            const currentContent = document.getElementById('bsport-widget-debug')?.innerHTML || '';
+            const hasChanged = currentContent !== previousWidgetContent && currentContent.length > 100;
+            
+            addDebugLog(`🔍 Vérification du filtrage:`, 'info');
+            addDebugLog(`📏 Longueur contenu actuel: ${currentContent.length}`, 'info');
+            addDebugLog(`📏 Longueur contenu précédent: ${previousWidgetContent.length}`, 'info');
+            addDebugLog(`🔄 Contenu a changé: ${hasChanged ? 'OUI' : 'NON'}`, hasChanged ? 'success' : 'warning');
+            
+            return hasChanged;
+        }
+
+        function saveWidgetContent() {
+            const widgetElement = document.getElementById('bsport-widget-debug');
+            if (widgetElement) {
+                previousWidgetContent = widgetElement.innerHTML;
+                addDebugLog(`💾 Contenu sauvegardé (${previousWidgetContent.length} caractères)`, 'info');
+            }
+        }
+
+        function compareWidgetContent() {
+            const currentContent = document.getElementById('bsport-widget-debug')?.innerHTML || '';
+            const hasChanged = currentContent !== previousWidgetContent;
+            
+            addDebugLog(`🔍 Comparaison du contenu:`, 'info');
+            addDebugLog(`📏 Avant: ${previousWidgetContent.length} caractères`, 'info');
+            addDebugLog(`📏 Après: ${currentContent.length} caractères`, 'info');
+            addDebugLog(`🔄 Changement détecté: ${hasChanged ? 'OUI' : 'NON'}`, hasChanged ? 'success' : 'warning');
+            
+            return hasChanged;
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            debugOutput = document.getElementById('debugOutput');
+            
+            addDebugLog('🚀 Initialisation du debug temps réel...', 'info');
+            addDebugLog('📋 Configuration des salles chargée:', 'info');
+            
+            Object.keys(sallesConfig).forEach(key => {
+                const config = sallesConfig[key];
+                addDebugLog(`  - ${key}: ${config.name} [${config.establishments.join(', ')}]`, 'info');
+            });
+            
+            // Configurer l'interception réseau
+            setupNetworkInterception();
+            
+            // Configurer les boutons de filtre avec debug
+            addDebugLog('🔧 Configuration des événements des boutons...', 'info');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            addDebugLog(`📊 ${filterButtons.length} boutons de filtre trouvés`, 'info');
+            
+            filterButtons.forEach((btn, index) => {
+                const filterKey = btn.getAttribute('data-filter');
+                const buttonText = btn.textContent.trim();
+                addDebugLog(`  ${index + 1}. Bouton: "${buttonText}" → filterKey: "${filterKey}"`, 'info');
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    addDebugLog(`🖱️ CLIC DÉTECTÉ sur bouton: "${buttonText}"`, 'success');
+                    const filterKey = e.target.getAttribute('data-filter');
+                    addDebugLog(`📋 Data-filter extrait: "${filterKey}"`, 'info');
+                    
+                    if (!filterKey) {
+                        addDebugLog('❌ Aucun data-filter trouvé!', 'error');
+                        return;
+                    }
+                    
+                    handleFilterClick(filterKey);
+                });
+                
+                addDebugLog(`✅ Événement attaché pour: ${buttonText}`, 'success');
+            });
+            
+            addDebugLog('✅ Tous les événements des boutons configurés', 'success');
+            
+            // Attendre BsportWidget
+            const checkBsportWidget = () => {
+                if (window.BsportWidget) {
+                    addDebugLog('✅ BsportWidget détecté!', 'success');
+                    updateStatus('widgetStatus', 'Widget chargé');
+                    
+                    // Monter le widget initial
+                    try {
+                        window.BsportWidget.mount(widgetConfig);
+                        addDebugLog('✅ Widget initial monté', 'success');
+                        updateStatus('widgetStatus', 'Widget actif');
+                        
+                        // Masquer le loading
+                        const loading = document.querySelector('.loading');
+                        if (loading) loading.style.display = 'none';
+                        
+                        // Lancer l'analyse automatique après 2 secondes
+                        setTimeout(() => {
+                            addDebugLog('🔍 Lancement de l\'analyse automatique...', 'info');
+                            runManualAnalysis();
+                        }, 2000);
+                        
+                    } catch (e) {
+                        addDebugLog(`❌ Erreur montage: ${e.message}`, 'error');
+                    }
+                } else {
+                    setTimeout(checkBsportWidget, 100);
+                }
+            };
+            
+            checkBsportWidget();
+        });
+
+        // Fonctions utilitaires pour la console du navigateur
+        function MountBsportWidget(config) {
+            if (window.BsportWidget) {
+                window.BsportWidget.mount(config);
+            }
+        }
+    </script>
+</body>
+</html> 

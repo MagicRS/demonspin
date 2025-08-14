@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Cours Détaillés - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 3rem;
+        }
+
+        .courses-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 100%;
+        }
+
+        .course-detail-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .course-detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+        }
+
+        .course-header {
+            position: relative;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-header.pole-dance {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-poledance-YleQog2gWVu0brZv.jpg");
+        }
+
+        .course-header.cerceau-aerien {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-cerceau-aerien-dJobzQegDBs26xKy.png");
+        }
+
+        .course-header.souplesse {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/test_souplesse-dOqDglEyo6holaDj.png");
+        }
+
+        .course-header.exotik {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/exotik-cours-Awv93Q3X6lUyOrjZ.png");
+        }
+
+        .course-header.pole-strap {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-pole-strap-AE0rjQ2gJzI9bP7M.png");
+        }
+
+        .course-header.choree {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-choregraphie-mp8Jlg3g4nIvKK6l.jpg");
+        }
+
+        .course-header.pilate {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-pilate-91-m5KnZr3WMxI65Xy2.jpg");
+        }
+
+        .course-header.bootykat {
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-twerk-91-A3Q7DlXrGBSR6vvK.png");
+        }
+
+        .course-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #38767d;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .course-content {
+            padding: 25px;
+        }
+
+        .course-brief {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .benefits-section {
+            margin-bottom: 20px;
+        }
+
+        .benefits-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #38767d;
+            margin-bottom: 12px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .benefit-item {
+            background: #f0f8f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #38767d;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: 2px solid #38767d;
+            color: #38767d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dropdown-toggle:hover {
+            background: #38767d;
+            color: white;
+        }
+
+        .dropdown-toggle.active {
+            background: #38767d;
+            color: white;
+        }
+
+        .course-details {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .course-details.show {
+            display: block;
+        }
+
+        .course-details p {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .course-details h4 {
+            color: #38767d;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .course-details ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .course-details li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .reservation-btn {
+            background: #38767d;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .reservation-btn:hover {
+            background: #4a8b92;
+            transform: translateY(-2px);
+        }
+
+        /* Style pour les ancres */
+        .course-detail-card {
+            scroll-margin-top: 20px;
+        }
+
+        /* Espacement spécifique pour les bénéfices de l'Exotik sur PC */
+        @media (min-width: 1025px) {
+            .exotik-benefits {
+                margin-top: 30px;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .courses-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .container {
+                max-width: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .course-header {
+                height: 200px;
+            }
+            
+            .course-title {
+                font-size: 1.5rem;
+            }
+            
+            .course-content {
+                padding: 20px;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.7rem;
+            }
+            
+            .course-content {
+                padding: 15px;
+            }
+            
+            .course-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Découvrez Nos Disciplines</h1>
+        
+        <div class="courses-container">
+            <!-- Pole Dance -->
+            <div class="course-detail-card" id="poledance">
+                <div class="course-header pole-dance">
+                    <div class="course-title">POLE DANCE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        La pole dance est une discipline complète qui allie force, grâce et créativité. Elle combine des mouvements de danse au sol et des figures acrobatiques autour d'une barre verticale, offrant un entraînement complet du corps.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">💪 Force musculaire</div>
+                            <div class="benefit-item">🤸‍♀️ Souplesse</div>
+                            <div class="benefit-item">⚖️ Équilibre</div>
+                            <div class="benefit-item">💃 Coordination</div>
+                            <div class="benefit-item">❤️ Cardio</div>
+                            <div class="benefit-item">🧠 Confiance en soi</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="pole-dance">
+                        <span id="pole-dance-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="pole-dance-details">
+                        <h4>Qu'est-ce que vous apprendrez ?</h4>
+                        <ul>
+                            <li>Techniques de base : spins, poses, transitions</li>
+                            <li>Renforcement musculaire progressif</li>
+                            <li>Développement de la souplesse et de la mobilité</li>
+                            <li>Chorégraphies et expression artistique</li>
+                            <li>Figures aériennes et acrobaties</li>
+                        </ul>
+                        
+                        <h4>Niveaux disponibles :</h4>
+                        <p>De débutant complet à avancé, avec une progression adaptée à chaque élève. Nos cours sont structurés pour garantir une évolution sécurisée et motivante.</p>
+                        
+                        <h4>Bienfaits particuliers :</h4>
+                        <p>La pole dance améliore la posture, tonifie l'ensemble du corps, développe la coordination et booste l'estime de soi. C'est aussi un excellent moyen d'évacuer le stress tout en s'amusant.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Cerceau Aérien -->
+            <div class="course-detail-card" id="cerceau">
+                <div class="course-header cerceau-aerien">
+                    <div class="course-title">CERCEAU AÉRIEN</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        Le cerceau aérien est une discipline acrobatique gracieuse qui se pratique suspendu dans un cerceau métallique. Mélange parfait entre danse, acrobatie et force, il offre des sensations uniques d'apesanteur.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🏋️‍♀️ Force du haut du corps</div>
+                            <div class="benefit-item">🌟 Grâce et élégance</div>
+                            <div class="benefit-item">🧘‍♀️ Concentration</div>
+                            <div class="benefit-item">💪 Endurance</div>
+                            <div class="benefit-item">🎭 Créativité artistique</div>
+                            <div class="benefit-item">😌 Sensation de liberté</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="cerceau-aerien">
+                        <span id="cerceau-aerien-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="cerceau-aerien-details">
+                        <h4>Techniques enseignées :</h4>
+                        <ul>
+                            <li>Montées et positions de base dans le cerceau</li>
+                            <li>Poses statiques et transitions fluides</li>
+                            <li>Figures acrobatiques et chutes contrôlées</li>
+                            <li>Séquences chorégraphiées</li>
+                            <li>Techniques de respiration et de relaxation</li>
+                        </ul>
+                        
+                        <h4>Sécurité et progression :</h4>
+                        <p>Tous nos cerceaux sont installés à hauteur sécurisée avec des tapis de protection. La progression se fait en douceur, en respectant le rythme de chaque élève.</p>
+                        
+                        <h4>Sensations uniques :</h4>
+                        <p>Le cerceau aérien procure une sensation incomparable de liberté et d'élégance. C'est une discipline méditative qui permet de se reconnecter avec son corps tout en développant force et souplesse.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Souplesse -->
+            <div class="course-detail-card" id="souplesse">
+                <div class="course-header souplesse">
+                    <div class="course-title">SOUPLESSE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        Nos cours de souplesse sont conçus pour améliorer votre mobilité, étirer votre corps en profondeur et perfectionner vos lignes. Un complément essentiel pour progresser dans toutes les disciplines aériennes.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🤸‍♀️ Flexibilité accrue</div>
+                            <div class="benefit-item">🦴 Mobilité articulaire</div>
+                            <div class="benefit-item">😌 Relaxation profonde</div>
+                            <div class="benefit-item">🩹 Prévention blessures</div>
+                            <div class="benefit-item">🏃‍♀️ Récupération active</div>
+                            <div class="benefit-item">🧘‍♀️ Bien-être mental</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="souplesse">
+                        <span id="souplesse-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="souplesse-details">
+                        <h4>Programme des cours :</h4>
+                        <ul>
+                            <li>Échauffement articulaire et préparation musculaire</li>
+                            <li>Étirements passifs et actifs ciblés</li>
+                            <li>Travail des grands écarts et backbends</li>
+                            <li>Techniques de respiration pour optimiser l'étirement</li>
+                            <li>Séances de relaxation et récupération</li>
+                        </ul>
+                        
+                        <h4>Méthode sécurisée :</h4>
+                        <p>Nos étirements suivent une progression respectueuse du corps, sans forçage. Chaque pose est adaptée au niveau de l'élève avec des variations et accessoires si nécessaire.</p>
+                        
+                        <h4>Complémentarité :</h4>
+                        <p>Ces cours sont parfaits en complément de la pole dance ou du cerceau aérien, mais aussi pour toute personne souhaitant améliorer sa posture et son bien-être au quotidien.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Exotik -->
+            <div class="course-detail-card" id="exotik">
+                <div class="course-header exotik">
+                    <div class="course-title">EXOTIK</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        L'Exotik est une version sensuelle et technique de la pole dance, souvent pratiquée en talons. Cette discipline célèbre la féminité, l'expression de soi et le flow au sol avec élégance et puissance.
+                    </p>
+                    
+                    <div class="benefits-section exotik-benefits">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">💃 Expression corporelle</div>
+                            <div class="benefit-item">👠 Équilibre en talons</div>
+                            <div class="benefit-item">🌟 Confiance en soi</div>
+                            <div class="benefit-item">💪 Renforcement musculaire</div>
+                            <div class="benefit-item">🎭 Créativité artistique</div>
+                            <div class="benefit-item">😍 Sensualité assumée</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="exotik">
+                        <span id="exotik-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="exotik-details">
+                        <h4>Techniques spécifiques :</h4>
+                        <ul>
+                            <li>Marche et poses en talons hauts</li>
+                            <li>Floor work (travail au sol) fluide et sensuel</li>
+                            <li>Transitions gracieuses et ondulations</li>
+                            <li>Chorégraphies expressives et personnalisées</li>
+                            <li>Techniques de regard et présence scénique</li>
+                        </ul>
+                        
+                        <h4>Ambiance bienveillante :</h4>
+                        <p>Nos cours d'Exotik se déroulent dans un environnement safe et respectueux, où chacune peut explorer sa féminité sans jugement, quel que soit son niveau ou sa morphologie.</p>
+                        
+                        <h4>Évolution personnelle :</h4>
+                        <p>L'Exotik développe la confiance en soi, l'acceptation de son corps et l'expression de sa personnalité. C'est un moyen puissant de se reconnecter avec sa féminité de manière positive.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Pole Strap -->
+            <div class="course-detail-card" id="polestrap">
+                <div class="course-header pole-strap">
+                    <div class="course-title">POLE STRAP</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        La Pole Strap combine pole dance et sangles aériennes pour créer une discipline unique. Elle renforce intensément le haut du corps tout en offrant de nouvelles sensations de rotation et de contrôle.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">💪 Force haut du corps</div>
+                            <div class="benefit-item">🌪️ Sensations de spin</div>
+                            <div class="benefit-item">⚖️ Contrôle et précision</div>
+                            <div class="benefit-item">🏋️‍♀️ Renforcement core</div>
+                            <div class="benefit-item">🧠 Coordination avancée</div>
+                            <div class="benefit-item">🚀 Défi personnel</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="pole-strap">
+                        <span id="pole-strap-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="pole-strap-details">
+                        <h4>Techniques enseignées :</h4>
+                        <ul>
+                            <li>Utilisation des sangles pour le renforcement</li>
+                            <li>Figures de pole assistées par les straps</li>
+                            <li>Rotations contrôlées et spins avancés</li>
+                            <li>Séquences combinant pole et aérien</li>
+                            <li>Travail de la force fonctionnelle</li>
+                        </ul>
+                        
+                        <h4>Challenge et progression :</h4>
+                        <p>La Pole Strap offre un défi constant et stimulant. Elle permet de repousser ses limites tout en travaillant de manière sécurisée grâce au support des sangles.</p>
+                        
+                        <h4>Innovation :</h4>
+                        <p>Cette discipline récente combine le meilleur de deux mondes : la technique pole et la liberté aérienne. C'est parfait pour celles qui cherchent à diversifier leur pratique et découvrir de nouvelles sensations.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Chorégraphie -->
+            <div class="course-detail-card" id="choree">
+                <div class="course-header choree">
+                    <div class="course-title">CHORÉGRAPHIE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        Nos cours de chorégraphie mêlent danse, fluidité et expression artistique autour de la barre. C'est l'occasion parfaite d'explorer votre musicalité et de développer votre style personnel en pole dance.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🎵 Sens du rythme</div>
+                            <div class="benefit-item">💃 Fluidité des mouvements</div>
+                            <div class="benefit-item">🎭 Expression artistique</div>
+                            <div class="benefit-item">🧠 Mémoire et coordination</div>
+                            <div class="benefit-item">🌟 Style personnel</div>
+                            <div class="benefit-item">😊 Plaisir de danser</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="choree">
+                        <span id="choree-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="choree-details">
+                        <h4>Contenu des cours :</h4>
+                        <ul>
+                            <li>Apprentissage de chorégraphies complètes</li>
+                            <li>Travail de l'interprétation musicale</li>
+                            <li>Développement du flow et des transitions</li>
+                            <li>Exploration de différents styles musicaux</li>
+                            <li>Création de combinaisons personnalisées</li>
+                        </ul>
+                        
+                        <h4>Tous niveaux :</h4>
+                        <p>Les chorégraphies sont adaptées au niveau technique de chaque élève. L'accent est mis sur l'expression et le plaisir plutôt que sur la difficulté technique pure.</p>
+                        
+                        <h4>Développement artistique :</h4>
+                        <p>Ces cours permettent de développer sa propre signature artistique, d'apprendre à raconter une histoire à travers le mouvement et de gagner en confiance dans sa pratique.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- Pilates -->
+            <div class="course-detail-card" id="pilates">
+                <div class="course-header pilate">
+                    <div class="course-title">PILATES</div>
+                    <div class="new-badge">NOUVEAU!</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        Nos cours de Pilates se concentrent sur la respiration, la posture et le renforcement musculaire profond. Ils constituent un complément idéal pour améliorer souplesse, stabilité et performance dans toutes les disciplines.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🧘‍♀️ Respiration consciente</div>
+                            <div class="benefit-item">🏛️ Posture améliorée</div>
+                            <div class="benefit-item">💪 Renforcement profond</div>
+                            <div class="benefit-item">⚖️ Stabilité et équilibre</div>
+                            <div class="benefit-item">🧠 Concentration mentale</div>
+                            <div class="benefit-item">😌 Relaxation et bien-être</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="pilate">
+                        <span id="pilate-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="pilate-details">
+                        <h4>Méthode enseignée :</h4>
+                        <ul>
+                            <li>Exercices de respiration et centrage</li>
+                            <li>Renforcement des muscles profonds (core, dos)</li>
+                            <li>Mobilité articulaire et étirements</li>
+                            <li>Travail de la proprioception et de l'équilibre</li>
+                            <li>Techniques de relaxation et récupération</li>
+                        </ul>
+                        
+                        <h4>Complémentarité parfaite :</h4>
+                        <p>Le Pilates est l'allié idéal de la pole dance et des disciplines aériennes. Il prépare le corps, prévient les blessures et améliore les performances dans toutes les autres pratiques.</p>
+                        
+                        <h4>Bien-être global :</h4>
+                        <p>Au-delà de l'aspect physique, le Pilates apporte une dimension méditative qui aide à gérer le stress, améliorer la concentration et développer une meilleure conscience corporelle.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+
+            <!-- BootyKat -->
+            <div class="course-detail-card" id="bootykat">
+                <div class="course-header bootykat">
+                    <div class="course-title">BOOTYKAT</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-brief">
+                        Le BootyKat est un cours de twerk et booty dance dynamique qui allie isolations du bassin, shakes, pops et chorégraphies rythmées. Une discipline ludique et cardio qui développe votre attitude féline sur des rythmes hip-hop, dancehall et afro.
+                    </p>
+                    
+                    <div class="benefits-section">
+                        <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">🍑 Travail fessiers et cuisses</div>
+                            <div class="benefit-item">💪 Renforcement du core</div>
+                            <div class="benefit-item">❤️ Cardio et endurance</div>
+                            <div class="benefit-item">🤸‍♀️ Coordination et rythme</div>
+                            <div class="benefit-item">🌟 Confiance en soi</div>
+                            <div class="benefit-item">🐱 Expression féline et sensuelle</div>
+                        </div>
+                    </div>
+                    
+                    <button class="dropdown-toggle" data-course="bootykat">
+                        <span id="bootykat-text">Voir plus de détails</span>
+                    </button>
+                    
+                    <div class="course-details" id="bootykat-details">
+                        <h4>Techniques enseignées :</h4>
+                        <ul>
+                            <li>Isolations précises du bassin et des hanches</li>
+                            <li>Shakes, pops, drops et mouvements de fessier</li>
+                            <li>Chorégraphies rythmées et enchaînements fluides</li>
+                            <li>Mouvements félins et attitude "girl power"</li>
+                            <li>Travail de l'expression corporelle et de la sensualité</li>
+                        </ul>
+                        
+                        <h4>Ambiance musicale :</h4>
+                        <p>Les cours se déroulent sur des rythmes endiablés de hip-hop, dancehall et afro, créant une atmosphère énergique et motivante qui vous invite à vous lâcher complètement.</p>
+                        
+                        <h4>Progression accessible :</h4>
+                        <p>Le BootyKat est accessible à tous les niveaux avec des progressions pas à pas. C'est un parfait mélange entre technique (isolations précises) et fun (chorégraphies expressives), idéal pour transpirer en musique tout en développant sa confiance.</p>
+                    </div>
+                    
+                    <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 === SCRIPT CSP-COMPATIBLE ===');
+        
+        // Variables globales
+        const anchorMap = {
+            'poledance': 'pole-dance',
+            'cerceau': 'cerceau-aerien',
+            'souplesse': 'souplesse',
+            'exotik': 'exotik',
+            'polestrap': 'pole-strap',
+            'choree': 'choree',
+            'pilates': 'pilate',
+            'bootykat': 'bootykat'
+        };
+
+        // Variables pour éviter les appels multiples
+        let lastProcessedHash = '';
+        let isProcessingHash = false;
+
+        // Fonction pour basculer les détails
+        function toggleDetails(courseId) {
+            console.log('🔄 toggleDetails appelée pour:', courseId);
+            
+            const details = document.getElementById(courseId + '-details');
+            const button = document.querySelector(`[data-course="${courseId}"]`);
+            const text = document.getElementById(courseId + '-text');
+            
+            console.log('📋 Éléments toggleDetails:');
+            console.log('- details:', details, details ? `(classes: ${details.className})` : '');
+            console.log('- button:', button, button ? `(classes: ${button.className})` : '');
+            console.log('- text:', text, text ? `(contenu: "${text.textContent}")` : '');
+            
+            if (details && button && text) {
+                const isCurrentlyShown = details.classList.contains('show');
+                console.log('📊 État actuel - details.show:', isCurrentlyShown);
+                console.log('📊 État actuel - button.active:', button.classList.contains('active'));
+                
+                if (isCurrentlyShown) {
+                    console.log('🔽 Fermeture des détails');
+                    details.classList.remove('show');
+                    button.classList.remove('active');
+                    text.textContent = 'Voir plus de détails';
+                } else {
+                    console.log('🔼 Ouverture des détails');
+                    details.classList.add('show');
+                    button.classList.add('active');
+                    text.textContent = 'Voir moins de détails';
+                }
+                
+                // Vérification post-changement
+                setTimeout(() => {
+                    const newState = details.classList.contains('show');
+                    console.log('✅ État après changement - details.show:', newState);
+                    console.log('✅ État après changement - button.active:', button.classList.contains('active'));
+                    console.log('✅ Texte après changement:', text.textContent);
+                    
+                    // Si l'état n'a pas changé, forcer l'ouverture
+                    if (!newState && !isCurrentlyShown) {
+                        console.log('🚨 Forçage de l\'ouverture - état non changé');
+                        details.style.display = 'block';
+                        details.classList.add('show');
+                        button.classList.add('active');
+                        text.textContent = 'Voir moins de détails';
+                    }
+                }, 100);
+            } else {
+                console.log('❌ toggleDetails - éléments manquants');
+            }
+        }
+
+        // Fonction de réservation
+        function goToReservation() {
+            window.top.location.href = 'https://demonspin.fr/reservation';
+        }
+
+        // Fonction de navigation par ancre - version améliorée
+        function handleAnchorNavigation() {
+            console.log('🔍 Navigation par ancre');
+            
+            // Détection multiple du hash
+            let hash = '';
+            
+            // Méthode 1: window.location.hash
+            if (window.location.hash) {
+                hash = window.location.hash.substr(1);
+                console.log('📍 Hash détecté (method 1):', hash);
+            }
+            
+            // Méthode 2: URL complète
+            if (!hash) {
+                const fullUrl = window.location.href;
+                const hashIndex = fullUrl.indexOf('#');
+                if (hashIndex !== -1) {
+                    hash = fullUrl.substring(hashIndex + 1);
+                    console.log('📍 Hash détecté (method 2):', hash);
+                }
+            }
+            
+            // Méthode 3: vérifier l'URL parent si dans iframe
+            if (!hash) {
+                try {
+                    if (window.parent !== window) {
+                        const parentHash = window.parent.location.hash;
+                        if (parentHash) {
+                            hash = parentHash.substr(1);
+                            console.log('📍 Hash détecté (parent):', hash);
+                        }
+                    }
+                } catch (e) {
+                    console.log('🚫 Impossible d\'accéder au hash parent');
+                }
+            }
+            
+            // Méthode 4: recherche dans l'URL référente
+            if (!hash && document.referrer) {
+                const refHashIndex = document.referrer.indexOf('#');
+                if (refHashIndex !== -1) {
+                    hash = document.referrer.substring(refHashIndex + 1);
+                    console.log('📍 Hash détecté (referrer):', hash);
+                }
+            }
+            
+            console.log('📍 Hash final:', hash);
+            
+            // Protection contre les appels multiples
+            if (hash === lastProcessedHash && isProcessingHash) {
+                console.log('⚠️ Hash déjà en cours de traitement, ignoré:', hash);
+                return;
+            }
+            
+            if (hash && hash === lastProcessedHash) {
+                console.log('⚠️ Hash déjà traité récemment, ignoré:', hash);
+                return;
+            }
+            
+            lastProcessedHash = hash;
+            isProcessingHash = true;
+            
+            console.log('✅ Début du traitement pour hash:', hash);
+            
+            if (hash && anchorMap[hash]) {
+                console.log('✅ Ancre reconnue:', anchorMap[hash]);
+                console.log('🗺️ Mapping utilisé:', {
+                    hash: hash,
+                    targetId: anchorMap[hash],
+                    elementId: hash
+                });
+                
+                const element = document.getElementById(hash);
+                console.log('🎯 Élément cherché avec ID:', hash);
+                console.log('🎯 Élément trouvé:', element);
+                
+                if (element) {
+                    console.log('📜 Scroll vers élément ID:', hash);
+                    console.log('📜 Élément className:', element.className);
+                    console.log('📜 Élément contenu (premiers 100 chars):', element.textContent.substring(0, 100));
+                    
+                    // Amélioration du scroll pour qu'il soit plus visible
+                    console.log('🎯 Position actuelle avant scroll:', window.pageYOffset);
+                    console.log('🎯 Position de l\'élément:', element.offsetTop);
+                    
+                    // Déterminer quelle fenêtre utiliser pour le scroll
+                    let targetWindow = window;
+                    let targetDocument = document;
+                    
+                    try {
+                        // Si on est dans un iframe, essayer de scroller dans le parent
+                        if (window.parent !== window) {
+                            console.log('🖼️ Iframe détecté, tentative de scroll parent');
+                            targetWindow = window.parent;
+                            targetDocument = window.parent.document;
+                        }
+                        if (window.top !== window && window.top !== window.parent) {
+                            console.log('🖼️ Top window différent, tentative de scroll top');
+                            targetWindow = window.top;
+                            targetDocument = window.top.document;
+                        }
+                    } catch (e) {
+                        console.log('🚫 Impossible d\'accéder au parent, utilisation de window local');
+                    }
+                    
+                    // Méthode 1: scrollIntoView avec options étendues
+                    console.log('📜 Méthode 1: scrollIntoView');
+                    element.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest' 
+                    });
+                    
+                    // Méthode 2: Scroll forcé avec différentes approches
+                    setTimeout(() => {
+                        const targetPosition = element.offsetTop - 100;
+                        console.log('🎯 Scroll manuel vers position:', targetPosition);
+                        
+                        // Essayer plusieurs méthodes de scroll
+                        try {
+                            // Méthode A: window.scrollTo
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                            console.log('✅ Scroll méthode A: window.scrollTo');
+                        } catch (e) {
+                            console.log('❌ Échec méthode A');
+                        }
+                        
+                        try {
+                            // Méthode B: document.documentElement.scrollTop
+                            document.documentElement.scrollTop = targetPosition;
+                            console.log('✅ Scroll méthode B: documentElement.scrollTop');
+                        } catch (e) {
+                            console.log('❌ Échec méthode B');
+                        }
+                        
+                        try {
+                            // Méthode C: document.body.scrollTop
+                            document.body.scrollTop = targetPosition;
+                            console.log('✅ Scroll méthode C: body.scrollTop');
+                        } catch (e) {
+                            console.log('❌ Échec méthode C');
+                        }
+                        
+                        // Méthode D: Forcer l'élément à être visible avec une animation CSS
+                        try {
+                            element.style.scrollMarginTop = '100px';
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            console.log('✅ Scroll méthode D: scrollMarginTop + scrollIntoView');
+                        } catch (e) {
+                            console.log('❌ Échec méthode D');
+                        }
+                        
+                        // Vérification du scroll
+                        setTimeout(() => {
+                            const finalPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+                            console.log('🎯 Position finale après scroll:', finalPosition);
+                            
+                            if (finalPosition === 0 && targetPosition > 0) {
+                                console.log('🚨 Scroll a échoué, tentative de forçage ultime');
+                                // Dernier recours: scroll immédiat sans animation
+                                window.scroll(0, targetPosition);
+                                document.documentElement.scrollTop = targetPosition;
+                                document.body.scrollTop = targetPosition;
+                            }
+                        }, 1000);
+                    }, 500);
+                    
+                    // Fonction pour ouvrir les détails avec tentatives multiples
+                    function tryOpenDetails(attempts = 0) {
+                        const maxAttempts = 5;
+                        const detailsId = anchorMap[hash];
+                        console.log(`🔄 Tentative ${attempts + 1}/${maxAttempts} d'ouverture des détails pour: ${detailsId}`);
+                        
+                        const details = document.getElementById(detailsId + '-details');
+                        const button = document.querySelector(`[data-course="${detailsId}"]`);
+                        const text = document.getElementById(detailsId + '-text');
+                        
+                        console.log('- hash original:', hash);
+                        console.log('- detailsId calculé:', detailsId);
+                        console.log('- details ID cherché:', detailsId + '-details');
+                        console.log('- button selector:', `[data-course="${detailsId}"]`);
+                        console.log('- text ID cherché:', detailsId + '-text');
+                        console.log('- details:', !!details);
+                        console.log('- button:', !!button);
+                        console.log('- text:', !!text);
+                        
+                        if (details && button && text) {
+                            // Utiliser la fonction toggleDetails pour s'assurer que ça marche
+                            // Forcer l'ouverture (pas de toggle)
+                            console.log('🔓 Forçage de l\'ouverture des détails pour:', detailsId);
+                            
+                            // Ouvrir directement sans toggle
+                            details.classList.add('show');
+                            button.classList.add('active');
+                            text.textContent = 'Voir moins de détails';
+                            
+                            console.log('✅ Détails forcés ouverts pour:', detailsId);
+                            isProcessingHash = false; // Libérer le verrou
+                        } else if (attempts < maxAttempts - 1) {
+                            console.log('⏳ Éléments pas encore prêts, nouvelle tentative dans 500ms...');
+                            setTimeout(() => tryOpenDetails(attempts + 1), 500);
+                        } else {
+                            console.log('❌ Impossible d\'ouvrir les détails après', maxAttempts, 'tentatives');
+                            console.log('🔧 Éléments manquants:', {
+                                details: !!details,
+                                button: !!button, 
+                                text: !!text
+                            });
+                            
+                            // Debug supplémentaire
+                            console.log('🔍 Debug - tous les éléments avec ID contenant "details":');
+                            document.querySelectorAll('[id*="details"]').forEach(el => {
+                                console.log('  -', el.id);
+                            });
+                            console.log('🔍 Debug - tous les boutons avec data-course:');
+                            document.querySelectorAll('[data-course]').forEach(el => {
+                                console.log('  -', el.getAttribute('data-course'));
+                            });
+                            
+                            isProcessingHash = false; // Libérer le verrou même en cas d'échec
+                        }
+                    }
+                    
+                    // Démarrer les tentatives d'ouverture après le scroll complet
+                    setTimeout(() => tryOpenDetails(), 1500); // Délai augmenté pour laisser le temps au scroll
+                } else {
+                    console.log('❌ Élément non trouvé pour ID:', hash);
+                    console.log('🔍 Debug - tous les éléments avec un ID:');
+                    document.querySelectorAll('[id]').forEach(el => {
+                        if (el.id.includes('pole') || el.id.includes('cerceau') || el.id.includes('souplesse') || el.id.includes('exotik') || el.id.includes('choree') || el.id.includes('pilate')) {
+                            console.log('  -', el.id, ':', el.tagName, el.className);
+                        }
+                    });
+                    isProcessingHash = false; // Libérer le verrou
+                }
+            } else if (hash) {
+                console.log('❌ Hash non reconnu:', hash);
+                console.log('💡 Hash disponibles:', Object.keys(anchorMap));
+                isProcessingHash = false; // Libérer le verrou
+            } else {
+                console.log('ℹ️ Aucun hash détecté');
+                isProcessingHash = false; // Libérer le verrou
+            }
+        }
+
+        // Fonction de test globale - exposition forcée
+        function createTestFunction() {
+            const testFunc = function(discipline) {
+                console.log('🧪 Test:', discipline);
+                if (anchorMap[discipline]) {
+                    const element = document.getElementById(discipline);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        setTimeout(() => {
+                            toggleDetails(anchorMap[discipline]);
+                            console.log('✅ Test réussi !');
+                        }, 600);
+                    } else {
+                        console.log('❌ Élément non trouvé:', discipline);
+                    }
+                } else {
+                    console.log('❌ Discipline inconnue:', discipline);
+                }
+            };
+            
+            const testUrlFunc = function(hash) {
+                console.log('🔗 Simulation URL avec hash:', hash);
+                
+                // Modifier temporairement l'URL
+                const oldUrl = window.location.href;
+                const newUrl = oldUrl.split('#')[0] + '#' + hash;
+                
+                console.log('📍 Ancienne URL:', oldUrl);
+                console.log('📍 Nouvelle URL simulée:', newUrl);
+                
+                // Forcer la détection du hash
+                window.location.hash = hash;
+                
+                // Déclencher la navigation
+                setTimeout(() => {
+                    handleAnchorNavigation();
+                }, 100);
+            };
+            
+            // Exposition multiple pour s'assurer que ça marche
+            window.testDiscipline = testFunc;
+            self.testDiscipline = testFunc;
+            globalThis.testDiscipline = testFunc;
+            
+            window.testUrl = testUrlFunc;
+            self.testUrl = testUrlFunc;
+            globalThis.testUrl = testUrlFunc;
+            
+            // Si on est dans un iframe, essayer d'exposer vers le parent
+            try {
+                if (window.parent !== window) {
+                    window.parent.testDiscipline = testFunc;
+                    window.parent.testUrl = testUrlFunc;
+                }
+                if (window.top !== window) {
+                    window.top.testDiscipline = testFunc;
+                    window.top.testUrl = testUrlFunc;
+                }
+            } catch (e) {
+                console.log('🚫 Impossible d\'exposer vers parent/top');
+            }
+            
+            return testFunc;
+        }
+
+        const testDiscipline = createTestFunction();
+        
+        // Test immédiat de la fonction
+        setTimeout(() => {
+            console.log('🔍 Tests d\'exposition:');
+            console.log('- window.testDiscipline:', typeof window.testDiscipline);
+            console.log('- window.testUrl:', typeof window.testUrl);
+            console.log('- self.testDiscipline:', typeof self.testDiscipline);
+            console.log('- globalThis.testDiscipline:', typeof globalThis.testDiscipline);
+            
+            // Test direct
+            try {
+                window.testDiscipline('test');
+                console.log('✅ window.testDiscipline fonctionne');
+            } catch (e) {
+                console.log('❌ window.testDiscipline ne fonctionne pas:', e);
+            }
+            
+            // Solution alternative si la fonction n'est pas accessible
+            console.log(`
+🔧 Si testDiscipline n'est pas accessible, copiez-collez ce code dans la console :
+
+function testDiscipline(discipline) {
+    const anchorMap = {
+        'poledance': 'pole-dance',
+        'cerceau': 'cerceau-aerien',
+        'souplesse': 'souplesse',
+        'exotik': 'exotik',
+        'polestrap': 'pole-strap',
+        'choree': 'choree',
+        'pilates': 'pilate'
+    };
+    
+    if (anchorMap[discipline]) {
+        const element = document.getElementById(discipline);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+                const details = document.getElementById(anchorMap[discipline] + '-details');
+                const button = document.querySelector('[data-course="' + anchorMap[discipline] + '"]');
+                const text = document.getElementById(anchorMap[discipline] + '-text');
+                
+                if (details && button && text) {
+                    details.classList.add('show');
+                    button.classList.add('active');
+                    text.textContent = 'Voir moins de détails';
+                    console.log('✅ Test réussi pour: ' + discipline);
+                }
+            }, 600);
+        }
+    }
+}
+
+function testUrl(hash) {
+    window.location.hash = hash;
+    setTimeout(() => {
+                                // Forcer la navigation
+                        if (hash && ['poledance','cerceau','souplesse','exotik','polestrap','choree','pilates','bootykat'].includes(hash)) {
+                            testDiscipline(hash);
+                        }
+    }, 100);
+}
+
+// Utilisez: testDiscipline("poledance") ou testUrl("poledance") ou testDiscipline("bootykat")
+            `);
+        }, 500);
+
+        // Initialisation quand le DOM est chargé
+        function init() {
+            console.log('🎯 Initialisation CSP-compatible');
+            
+            // Event listeners pour les boutons de détails
+            document.querySelectorAll('.dropdown-toggle[data-course]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseId = this.getAttribute('data-course');
+                    toggleDetails(courseId);
+                });
+            });
+
+            // Event listeners pour les boutons de réservation
+            document.querySelectorAll('[data-action="reservation"]').forEach(button => {
+                button.addEventListener('click', goToReservation);
+            });
+
+            // Gestion des ancres
+            handleAnchorNavigation();
+            
+            console.log('✅ Event listeners ajoutés');
+            console.log('💡 Fonction disponible: testDiscipline("poledance") ou testDiscipline("bootykat")');
+        }
+
+        // Lancement de l'initialisation
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Gestion des changements d'ancre
+        window.addEventListener('hashchange', handleAnchorNavigation);
+        window.addEventListener('load', handleAnchorNavigation);
+    </script>
+</body>
+</html> 

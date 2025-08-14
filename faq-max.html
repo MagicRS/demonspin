@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .search-input:focus {
+            border-color: #38767d;
+            box-shadow: 0 0 0 3px rgba(56, 118, 125, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+
+        .search-results-info {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* Categories */
+        .faq-category {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-category.hidden {
+            display: none;
+        }
+
+        .category-header {
+            background: #38767d;
+            color: white;
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .category-header:hover {
+            background: #2d5a61;
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .category-content.active {
+            max-height: 2000px;
+        }
+
+        .category-inner {
+            padding: 25px;
+        }
+
+        /* Questions */
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-item.hidden {
+            display: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: #38767d;
+        }
+
+        .faq-question::before {
+            content: "•";
+            color: #38767d;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .faq-answer {
+            color: #555;
+            font-size: 0.95rem;
+            margin-left: 20px;
+            line-height: 1.7;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .faq-answer.active {
+            max-height: 800px;
+            opacity: 1;
+            margin-top: 10px;
+            padding-bottom: 15px;
+        }
+
+        .highlight {
+            color: #38767d;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
+
+            .search-input {
+                padding: 12px 16px 12px 45px;
+                font-size: 15px;
+            }
+
+            .category-header {
+                padding: 16px 20px;
+                font-size: 1.1rem;
+            }
+
+            .category-inner {
+                padding: 20px;
+            }
+
+            .faq-question {
+                font-size: 1rem;
+                gap: 8px;
+            }
+
+            .faq-question::before {
+                font-size: 1.1rem;
+                margin-top: 1px;
+            }
+
+            .faq-answer {
+                font-size: 0.9rem;
+                margin-left: 16px;
+                line-height: 1.6;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .category-header {
+                padding: 14px 16px;
+                font-size: 1rem;
+            }
+
+            .category-inner {
+                padding: 16px;
+            }
+
+            .faq-question {
+                gap: 6px;
+                font-size: 0.95rem;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+
+            .faq-question::before {
+                font-size: 1rem;
+                margin-top: 0;
+                min-width: 8px;
+            }
+
+            .faq-answer {
+                margin-left: 14px;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+
+            .faq-item {
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+            }
+
+            .forbidden-grip img {
+                width: 120px;
+                height: 80px;
+            }
+
+            .grip-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .forbidden-grip::before {
+                width: 40px;
+                height: 40px;
+                font-size: 24px;
+            }
+        }
+
+        /* Forbidden grip image with red cross */
+        .forbidden-grip {
+            display: inline-block;
+            position: relative;
+            margin: 10px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .forbidden-grip img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .forbidden-grip::before {
+            content: '✕';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #dc3545;
+            font-size: 32px;
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #dc3545;
+        }
+
+        .grip-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .grip-note {
+            color: #666;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Questions Fréquentes</h1>
+        <p class="page-subtitle">Trouvez rapidement les réponses à vos questions</p>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-icon">🔍</div>
+            <input type="text" class="search-input" placeholder="Rechercher une question..." id="searchInput">
+            <div class="search-results-info" id="searchInfo"></div>
+        </div>
+
+        <!-- FAQ Categories -->
+        <div class="faq-categories">
+            <!-- Catégorie 1: Tenue & Grip -->
+            <div class="faq-category" data-category="tenue-grip">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span>Tenue & Grip</span>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                    <div class="category-inner">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Quelle tenue dois-je porter pour mon premier cours ?
+                            </div>
+                            <div class="faq-answer">
+                                Un short et une brassière ou débardeur près du corps ; la peau doit adhérer à la barre. Et surtout pas de crème ou huile sur le corps.Prends aussi legging + sweat pour échauffement/étirements.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Dois-je enlever mes bijoux ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui : retirer ses bijoux est conseillé pour eviter les blessures et d'abimer / rayer la pole.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Quels produits de grip sont autorisés ?
+                            </div>
+                            <div class="faq-answer">
+                                Grips liquides (Dry Hands, magnésie liquide, ITac2 light) ; ils améliorent l'adhérence sans encrasser la barre.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Quels grips sont interdits ?
+                            </div>
+                            <div class="faq-answer">
+                                Uniquement le <strong>Monkey Grip</strong> car il laisse un dépôt difficile à nettoyer et peut endommager la barre.
+                                <br><br>
+                                <div class="grip-container">
+                                    <div class="forbidden-grip">
+                                        <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/monkey-grip-pole-dance-YanJlng5vzc6qKZm.jpg" alt="Monkey Grip interdit" />
+                                    </div>
+                                    <div class="grip-note">☝️ Grip interdit dans notre studio</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Puis-je porter des talons ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui uniquement pour les cours « Pole Exotic » ; talons fermés, semelle propre. Pole dance classiques : pieds nus.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catégorie 2: Niveaux & Pédagogie -->
+            <div class="faq-category" data-category="niveaux-pedagogie">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span>Niveaux & Pédagogie</span>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                    <div class="category-inner">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Je débute complètement en pole dance; quel cours choisir ?
+                            </div>
+                            <div class="faq-answer">
+                                Commence par Initiation (4–5 premières séances) pour apprendre les prises de base et la sécurité.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Quand passer au niveau Débutant 1 ?
+                            </div>
+                            <div class="faq-answer">
+                                Après 4–5 cours d'Initiation, quand tu maîtrises les prises de base ; validation par le/la prof.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Débutant 1 → Débutant 2 : combien de temps ?
+                            </div>
+                            <div class="faq-answer">
+                                Cela varie selon chacun. Le changement peut prendre 6 mois comme un an et demi, selon votre assiduité; être à l'aise avec inversions assistées et quelques figures statiques.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Intermédiaire 1-2-3 : qu'est-ce qui change ?
+                            </div>
+                            <div class="faq-answer">
+                                On complexifie inversions, enchaîne combos aériens et aborde figures dynamiques (drops, handsprings…).
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Les profs sont-ils accessibles si j'ai peur ou une blessure ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, l'équipe est très pédagogue ; chaque figure a une variante adaptée ou une progression pas à pas.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Les cours sont-ils 100% féminins (élèves et professeur) ?
+                            </div>
+                            <div class="faq-answer">
+                                Nos cours sont 100% féminins du côté des élèves. Toutefois, certains cours peuvent être animés par un professeur homme (Damien). Si vous préférez suivre un cours dispensé uniquement par une femme, c'est tout à fait possible : le prénom du professeur est indiqué juste sous le niveau du cours dans le planning. Vous pouvez ainsi sélectionner facilement les cours qui correspondent à vos préférences.
+                                <br><br>
+                                <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/coursfa-c-minin-YNq2jBMVajSnnR14.png" alt="Planning avec indication des professeurs" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catégorie 3: Paiement & Réservation -->
+            <div class="faq-category" data-category="paiement-reservation">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span>Paiement & Réservation (Bsport)</span>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                    <div class="category-inner">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Tarifs à l'unité ?
+                            </div>
+                            <div class="faq-answer">
+                                23 € le cours classique, 12 € le cours de souplesse.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Quelles cartes de cours proposez-vous ?
+                            </div>
+                            <div class="faq-answer">
+                                Carte 1 cours (23 € ou 12 € souplesse) ; cartes 4, 10, 20 ou 40 crédits ; cartes étudiant 10 ou 40 crédits tarif réduit ; carte cours d'essai à 10 €.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Comment acheter une carte ?
+                            </div>
+                            <div class="faq-answer">
+                                Aller dans l'onglet « Cartes&Forfaits » → choisir la formule → paiement CB sécurisé.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Comment réserver un cours ?
+                            </div>
+                            <div class="faq-answer">
+                                Onglet « Réserver un cours » → planning → sélectionner le créneau → cliquer « Réserver » ; le crédit est débité automatiquement.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Puis-je annuler ou déplacer ma séance ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, jusqu'à la limite indiquée (24 h avant) ; le crédit est recrédité.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Les crédits ont-ils une date d'expiration ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, durée affichée lors de l'achat ; pense à réserver avant l'échéance.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleAnswer(this)">
+                                Proposez-vous un tarif étudiant ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, cartes 10 ou 40 crédits à prix réduit sur présentation d'une carte étudiante valide.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des catégories
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.category-icon');
+            
+            content.classList.toggle('active');
+            icon.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        // Gestion des questions individuelles
+        function toggleAnswer(question) {
+            const answer = question.nextElementSibling;
+            const allAnswers = document.querySelectorAll('.faq-answer');
+            
+            // Fermer toutes les autres réponses
+            allAnswers.forEach(ans => {
+                if (ans !== answer) {
+                    ans.classList.remove('active');
+                }
+            });
+            
+            // Toggle la réponse actuelle
+            answer.classList.toggle('active');
+        }
+
+        // Fonction de recherche
+        function searchFAQ() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categories = document.querySelectorAll('.faq-category');
+            const searchInfo = document.getElementById('searchInfo');
+            
+            let visibleQuestions = 0;
+            let totalQuestions = 0;
+
+            categories.forEach(category => {
+                const items = category.querySelectorAll('.faq-item');
+                let categoryHasVisible = false;
+
+                items.forEach(item => {
+                    totalQuestions++;
+                    const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                    
+                    // Supprimer les anciens highlights
+                    const questionEl = item.querySelector('.faq-question');
+                    const answerEl = item.querySelector('.faq-answer');
+                    questionEl.innerHTML = questionEl.textContent;
+                    answerEl.innerHTML = answerEl.textContent;
+                    
+                    if (searchTerm === '' || question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                        categoryHasVisible = true;
+                        visibleQuestions++;
+                        
+                        // Ajouter highlight SEULEMENT sur les réponses si il y a un terme de recherche
+                        if (searchTerm !== '') {
+                            // Ne pas highlight les titres de questions
+                            // highlightText(questionEl, searchTerm); // RETIRÉ
+                            
+                            // Highlight uniquement les réponses
+                            if (answer.includes(searchTerm)) {
+                                highlightText(answerEl, searchTerm);
+                            }
+                            
+                            // Ouvrir automatiquement la catégorie et la réponse
+                            const categoryContent = category.querySelector('.category-content');
+                            const categoryIcon = category.querySelector('.category-icon');
+                            categoryContent.classList.add('active');
+                            categoryIcon.style.transform = 'rotate(180deg)';
+                            answerEl.classList.add('active');
+                        }
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                // Afficher/masquer la catégorie selon si elle contient des résultats
+                if (categoryHasVisible || searchTerm === '') {
+                    category.classList.remove('hidden');
+                } else {
+                    category.classList.add('hidden');
+                }
+            });
+
+            // Afficher les infos de recherche
+            if (searchTerm === '') {
+                searchInfo.textContent = '';
+            } else if (visibleQuestions === 0) {
+                searchInfo.textContent = 'Aucun résultat trouvé';
+                searchInfo.style.color = '#e74c3c';
+            } else {
+                searchInfo.textContent = `${visibleQuestions} question${visibleQuestions > 1 ? 's' : ''} trouvée${visibleQuestions > 1 ? 's' : ''}`;
+                searchInfo.style.color = '#38767d';
+            }
+        }
+
+        // Fonction pour highlight le texte
+        function highlightText(element, searchTerm) {
+            const text = element.textContent;
+            // Échapper les caractères spéciaux regex
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+            element.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // Événement de recherche
+        document.getElementById('searchInput').addEventListener('input', searchFAQ);
+
+        // Ouvrir la première catégorie par défaut
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstCategory = document.querySelector('.category-header');
+            if (firstCategory) {
+                toggleCategory(firstCategory);
+            }
+        });
+    </script>
+</body>
+</html> 

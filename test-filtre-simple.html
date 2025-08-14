@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Filtre Simple - Demon Spin</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .filters {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 2px solid #38767d;
+            background: white;
+            color: #38767d;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .filter-btn:hover {
+            background: #38767d;
+            color: white;
+        }
+        .filter-btn.active {
+            background: #38767d;
+            color: white;
+        }
+        .widget-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 500px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f4f5;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .debug-controls {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .debug-btn {
+            padding: 5px 10px;
+            margin: 3px;
+            border: 1px solid #666;
+            background: white;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .debug-btn:hover {
+            background: #f0f0f0;
+        }
+        /* Styles pour le diagnostic visuel */
+        .highlighted-red { border: 3px solid red !important; background: rgba(255,0,0,0.1) !important; }
+        .highlighted-blue { border: 3px solid blue !important; background: rgba(0,0,255,0.1) !important; }
+        .highlighted-green { border: 3px solid green !important; background: rgba(0,255,0,0.1) !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test Filtrage Simple - Demon Spin</h1>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">🏢 Toutes les salles</button>
+            <button class="filter-btn" data-filter="plessis-pole">💃 Plessis - Pole</button>
+            <button class="filter-btn" data-filter="plessis-aerial">🎪 Plessis - Aerial</button>
+            <button class="filter-btn" data-filter="saint-fargeau">🏛️ Saint-Fargeau</button>
+        </div>
+
+        <div class="status" id="status">✅ Widget en cours de chargement...</div>
+
+        <div class="debug-controls">
+            <strong>🔍 Diagnostic Avancé :</strong><br>
+            <button class="debug-btn" onclick="highlightAllCards()">Surligner toutes les cards</button>
+            <button class="debug-btn" onclick="testOpacityMethod()">Test Opacity</button>
+            <button class="debug-btn" onclick="testVisibilityMethod()">Test Visibility</button>
+            <button class="debug-btn" onclick="testRemoveMethod()">Test Remove</button>
+            <button class="debug-btn" onclick="testSmartRemove()" style="background: #9b59b6;">🧠 Test Smart Remove</button>
+            <button class="debug-btn" onclick="testUltraPrecise()" style="background: #f39c12;">🎯 Test Ultra-Précis</button>
+            <button class="debug-btn" onclick="testFinalPrecis()" style="background: #27ae60;">🏆 Test FINAL</button>
+            <button class="debug-btn" onclick="restoreFinalTest()" style="background: #3498db;">🔄 Restaurer</button>
+            <button class="debug-btn" onclick="inspectElement()" style="background: #34495e;">🔍 Inspector</button>
+            <button class="debug-btn" onclick="clearHighlights()">Nettoyer</button>
+        </div>
+
+        <div class="widget-container">
+            <div id="bsport-widget-simple"></div>
+        </div>
+    </div>
+
+    <!-- Bsport Widget CDN -->
+    <script>
+        !function (b, s, p, o, r, t) { 
+            !typeof window.BsportWidget !== "undefined" && !document.getElementById("bsport-widget-cdn") && !function () { 
+                m = b.createElement(s), m.id = "bsport-widget-cdn", m.src = p, b.getElementsByTagName("head")[0].appendChild(m) 
+            }() 
+        }(document, "script", "https://cdn.bsport.io/scripts/widget.js")
+    </script>
+
+    <script>
+        // Configuration simple et claire
+        let currentFilter = 'all';
+        let widgetAnalysis = null;
+        let persistentObserver = null;
+        let hiddenEstablishments = [];
+
+        const sallesConfig = {
+            all: {
+                name: "Toutes les salles",
+                establishments: []
+            },
+            "plessis-pole": {
+                name: "Le Plessis - Pole Dance",
+                establishments: [1697]
+            },
+            "plessis-aerial": {
+                name: "Le Plessis - Aerial Hoop", 
+                establishments: [2421]
+            },
+            "saint-fargeau": {
+                name: "Saint-Fargeau-Ponthierry",
+                establishments: [12450]
+            }
+        };
+
+        const widgetConfig = {
+            "parentElement": "bsport-widget-simple",
+            "companyId": 553,
+            "franchiseId": null,
+            "dialogMode": 1,
+            "widgetType": "calendar",
+            "showFab": false,
+            "fullScreenPopup": false,
+            "config": {
+                "calendar": {
+                    "groupSessionByPeriod": false,
+                    "variant": "activityName",
+                    "todayOnly": false,
+                    "compactMode": false,
+                    "establishments": []
+                }
+            }
+        };
+
+        // Fonction pour mettre à jour le statut
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Fonction pour analyser le contenu du widget
+        function analyzeWidget() {
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return null;
+
+            const establishments = {
+                'plessis': [],
+                'pole': [],
+                'aerial': [],
+                'saint-fargeau': [],
+                'ponthierry': []
+            };
+
+            // Parcourir tous les éléments texte
+            const walker = document.createTreeWalker(
+                widgetElement,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.textContent.trim().length > 2) {
+                    const text = node.textContent.toLowerCase();
+                    Object.keys(establishments).forEach(est => {
+                        if (text.includes(est)) {
+                            establishments[est].push({
+                                text: node.textContent.trim(),
+                                element: node.parentElement
+                            });
+                        }
+                    });
+                }
+            }
+
+            console.log('🔍 Analyse du widget:', establishments);
+            return establishments;
+        }
+
+        // Fonction pour démarrer la surveillance persistante
+        function startPersistentHiding() {
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            // Arrêter l'observateur précédent
+            if (persistentObserver) {
+                persistentObserver.disconnect();
+            }
+
+            persistentObserver = new MutationObserver(() => {
+                // Re-masquer immédiatement si nécessaire
+                if (currentFilter !== 'all' && hiddenEstablishments.length > 0) {
+                    applyHidingQuietly();
+                }
+            });
+
+            persistentObserver.observe(widgetElement, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['style']
+            });
+
+            console.log('👁️ Surveillance persistante démarrée');
+        }
+
+        // Fonction pour masquer silencieusement (sans logs)
+        function applyHidingQuietly() {
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let hiddenCount = 0;
+            
+            hiddenEstablishments.forEach(establishment => {
+                // Chercher tous les éléments contenant ce nom d'établissement
+                const walker = document.createTreeWalker(
+                    widgetElement,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                let node;
+                while (node = walker.nextNode()) {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(establishment)) {
+                        // Chercher le bs-week-card parent
+                        let elementToHide = node.parentElement;
+                        let attempts = 0;
+                        
+                        while (elementToHide && elementToHide !== widgetElement && attempts < 10) {
+                            if (elementToHide.className && elementToHide.className.includes('bs-week-card')) {
+                                if (elementToHide.style.display !== 'none') {
+                                    elementToHide.style.display = 'none';
+                                    elementToHide.setAttribute('data-persistent-hidden', establishment);
+                                    hiddenCount++;
+                                }
+                                break;
+                            }
+                            elementToHide = elementToHide.parentElement;
+                            attempts++;
+                        }
+                    }
+                }
+            });
+
+            if (hiddenCount > 0) {
+                console.log(`🔄 Re-masqué ${hiddenCount} éléments automatiquement`);
+            }
+        }
+
+        // Fonction pour arrêter la surveillance
+        function stopPersistentHiding() {
+            if (persistentObserver) {
+                persistentObserver.disconnect();
+                persistentObserver = null;
+                console.log('👁️ Surveillance persistante arrêtée');
+            }
+        }
+
+        // Fonction pour restaurer tous les éléments masqués
+        function restoreHiddenElements() {
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            const hiddenElements = widgetElement.querySelectorAll('[data-hidden-by-filter], [data-persistent-hidden]');
+            hiddenElements.forEach(el => {
+                el.style.display = '';
+                el.removeAttribute('data-hidden-by-filter');
+                el.removeAttribute('data-persistent-hidden');
+            });
+            
+            hiddenEstablishments = [];
+            console.log(`✅ ${hiddenElements.length} éléments restaurés`);
+        }
+
+        // Fonction principale de filtrage AMÉLIORÉE
+        function applyFilter(filterKey) {
+            updateStatus(`🔄 Application du filtre: ${sallesConfig[filterKey].name}`);
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) {
+                updateStatus('❌ Widget non trouvé');
+                return;
+            }
+
+            // Arrêter la surveillance pendant la reconfiguration
+            stopPersistentHiding();
+
+            // Restaurer tous les éléments
+            restoreHiddenElements();
+
+            if (filterKey === 'all') {
+                updateStatus('✅ Toutes les salles affichées');
+                return;
+            }
+
+            // Définir quels établissements masquer
+            const filterMapping = {
+                'plessis-pole': ['saint-fargeau', 'ponthierry', 'aerial'],
+                'plessis-aerial': ['saint-fargeau', 'ponthierry', 'pole'],
+                'saint-fargeau': ['plessis', 'pole', 'aerial']
+            };
+
+            hiddenEstablishments = filterMapping[filterKey] || [];
+            console.log(`🎯 Établissements à masquer en permanence: ${hiddenEstablishments.join(', ')}`);
+
+            // Appliquer le masquage initial
+            applyHidingQuietly();
+
+            // Démarrer la surveillance persistante
+            startPersistentHiding();
+
+            updateStatus(`✅ ${sallesConfig[filterKey].name} - Masquage persistant actif`);
+        }
+
+        // Gestion des clics sur les boutons de filtre
+        function handleFilterClick(filterKey) {
+            console.log(`🖱️ Clic sur filtre: ${filterKey}`);
+            
+            if (currentFilter === filterKey) {
+                console.log('⚠️ Filtre déjà actif');
+                return;
+            }
+
+            // Mettre à jour les boutons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === filterKey) {
+                    btn.classList.add('active');
+                }
+            });
+
+            currentFilter = filterKey;
+            applyFilter(filterKey);
+        }
+
+        // Fonction pour monter le widget Bsport
+        function mountBsportWidget(config, repeat = 1) {
+            if (repeat > 50) return;
+            if (!window.BsportWidget) {
+                return setTimeout(() => {
+                    mountBsportWidget(config, repeat + 1);
+                }, 100 * repeat || 1);
+            }
+            window.BsportWidget.mount(config);
+        }
+
+        // === FONCTIONS DE DIAGNOSTIC AVANCÉ ===
+        
+        function highlightAllCards() {
+            console.log('🔍 === SURLIGNAGE DE TOUTES LES CARDS ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            // Chercher tous les éléments bs-week-card
+            const allCards = widgetElement.querySelectorAll('[class*="bs-week-card"], [class*="card"], [class*="session"], [class*="offer"]');
+            console.log(`📋 ${allCards.length} éléments trouvés avec des classes de cards`);
+
+            allCards.forEach((card, index) => {
+                card.classList.add('highlighted-blue');
+                console.log(`${index + 1}. ${card.tagName}.${card.className} - Contenu: "${card.textContent.substring(0, 50)}..."`);
+            });
+
+            // Chercher spécifiquement les bs-week-card
+            const weekCards = widgetElement.querySelectorAll('.bs-week-card');
+            console.log(`📅 ${weekCards.length} bs-week-card spécifiques trouvées`);
+            
+            weekCards.forEach((card, index) => {
+                card.classList.remove('highlighted-blue');
+                card.classList.add('highlighted-red');
+                console.log(`WEEK-CARD ${index + 1}: "${card.textContent.substring(0, 100)}..."`);
+            });
+
+            updateStatus(`🔍 ${allCards.length} cards surlignées (${weekCards.length} bs-week-card en rouge)`);
+        }
+
+        function testOpacityMethod() {
+            console.log('🧪 === TEST MÉTHODE OPACITY (VERSION PRÉCISE) ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let hiddenCount = 0;
+            const targetEstablishments = ['plessis', 'pole', 'aerial'];
+
+            targetEstablishments.forEach(establishment => {
+                const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while (node = walker.nextNode()) {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(establishment)) {
+                        let elementToHide = node.parentElement;
+                        let attempts = 0;
+                        
+                        while (elementToHide && elementToHide !== widgetElement && attempts < 8) {
+                            const className = elementToHide.className || '';
+                            
+                            // Chercher des conteneurs plus précis pour les cours individuels
+                            if (
+                                className.includes('offer') ||
+                                className.includes('session') ||
+                                className.includes('course') ||
+                                className.includes('event') ||
+                                className.includes('booking') ||
+                                className.includes('card-offer') ||
+                                className.includes('bs-offer') ||
+                                className.includes('bs-session') ||
+                                (className.includes('bs-') && elementToHide.offsetHeight > 40 && elementToHide.offsetHeight < 200)
+                            ) {
+                                // Vérifier que ce n'est pas un conteneur de jour entier
+                                const textContent = elementToHide.textContent;
+                                const hasDateHeaders = /lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(textContent);
+                                const hasMultipleCourses = (textContent.match(/\d{1,2}[h:]\d{2}/g) || []).length > 2;
+                                
+                                if (!hasDateHeaders && !hasMultipleCourses && elementToHide.offsetHeight < 150) {
+                                    elementToHide.style.opacity = '0.2';
+                                    elementToHide.style.filter = 'blur(3px)';
+                                    elementToHide.classList.add('highlighted-green');
+                                    hiddenCount++;
+                                    console.log(`👻 Opacity appliquée (précise): ${elementToHide.tagName}.${elementToHide.className} - Hauteur: ${elementToHide.offsetHeight}px`);
+                                    break;
+                                }
+                            }
+                            elementToHide = elementToHide.parentElement;
+                            attempts++;
+                        }
+                    }
+                }
+            });
+
+            updateStatus(`🧪 Test Opacity Précis: ${hiddenCount} cours estompés`);
+        }
+
+        function testVisibilityMethod() {
+            console.log('🧪 === TEST MÉTHODE VISIBILITY (VERSION PRÉCISE) ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let hiddenCount = 0;
+            const targetEstablishments = ['plessis', 'pole', 'aerial'];
+
+            targetEstablishments.forEach(establishment => {
+                const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while (node = walker.nextNode()) {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(establishment)) {
+                        let elementToHide = node.parentElement;
+                        let attempts = 0;
+                        
+                        while (elementToHide && elementToHide !== widgetElement && attempts < 8) {
+                            const className = elementToHide.className || '';
+                            
+                            // Même logique précise que pour opacity
+                            if (
+                                className.includes('offer') ||
+                                className.includes('session') ||
+                                className.includes('course') ||
+                                className.includes('event') ||
+                                className.includes('booking') ||
+                                className.includes('card-offer') ||
+                                className.includes('bs-offer') ||
+                                className.includes('bs-session') ||
+                                (className.includes('bs-') && elementToHide.offsetHeight > 40 && elementToHide.offsetHeight < 200)
+                            ) {
+                                const textContent = elementToHide.textContent;
+                                const hasDateHeaders = /lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(textContent);
+                                const hasMultipleCourses = (textContent.match(/\d{1,2}[h:]\d{2}/g) || []).length > 2;
+                                
+                                if (!hasDateHeaders && !hasMultipleCourses && elementToHide.offsetHeight < 150) {
+                                    elementToHide.style.visibility = 'hidden';
+                                    elementToHide.classList.add('highlighted-green');
+                                    hiddenCount++;
+                                    console.log(`👻 Visibility appliquée (précise): ${elementToHide.tagName}.${elementToHide.className} - Hauteur: ${elementToHide.offsetHeight}px`);
+                                    break;
+                                }
+                            }
+                            elementToHide = elementToHide.parentElement;
+                            attempts++;
+                        }
+                    }
+                }
+            });
+
+            updateStatus(`🧪 Test Visibility Précis: ${hiddenCount} cours cachés`);
+        }
+
+        function testRemoveMethod() {
+            console.log('🧪 === TEST MÉTHODE REMOVE (VERSION PRÉCISE) ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let removedCount = 0;
+            const targetEstablishments = ['plessis', 'pole', 'aerial'];
+            const removedElements = [];
+
+            targetEstablishments.forEach(establishment => {
+                const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                const nodesToCheck = [];
+                
+                while (node = walker.nextNode()) {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(establishment)) {
+                        nodesToCheck.push(node);
+                    }
+                }
+                
+                nodesToCheck.forEach(textNode => {
+                    let elementToRemove = textNode.parentElement;
+                    let attempts = 0;
+                    
+                    while (elementToRemove && elementToRemove !== widgetElement && attempts < 8) {
+                        const className = elementToRemove.className || '';
+                        
+                        // Même logique précise
+                        if (
+                            className.includes('offer') ||
+                            className.includes('session') ||
+                            className.includes('course') ||
+                            className.includes('event') ||
+                            className.includes('booking') ||
+                            className.includes('card-offer') ||
+                            className.includes('bs-offer') ||
+                            className.includes('bs-session') ||
+                            (className.includes('bs-') && elementToRemove.offsetHeight > 40 && elementToRemove.offsetHeight < 200)
+                        ) {
+                            const textContent = elementToRemove.textContent;
+                            const hasDateHeaders = /lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(textContent);
+                            const hasMultipleCourses = (textContent.match(/\d{1,2}[h:]\d{2}/g) || []).length > 2;
+                            
+                            if (!hasDateHeaders && !hasMultipleCourses && elementToRemove.offsetHeight < 150) {
+                                console.log(`🗑️ Suppression (précise): ${elementToRemove.tagName}.${elementToRemove.className} - Hauteur: ${elementToRemove.offsetHeight}px`);
+                                console.log(`📄 Contenu: "${elementToRemove.textContent.substring(0, 100)}..."`);
+                                
+                                removedElements.push({
+                                    element: elementToRemove,
+                                    parent: elementToRemove.parentElement,
+                                    nextSibling: elementToRemove.nextSibling
+                                });
+                                elementToRemove.remove();
+                                removedCount++;
+                                break;
+                            }
+                        }
+                        elementToRemove = elementToRemove.parentElement;
+                        attempts++;
+                    }
+                });
+            });
+
+            window.removedElements = removedElements;
+            updateStatus(`🧪 Test Remove Précis: ${removedCount} cours supprimés (jours préservés)`);
+        }
+
+        function inspectElement() {
+            console.log('🔍 === INSPECTION DÉTAILLÉE DE LA STRUCTURE DOM ===');
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            // Chercher le premier nom de studio
+            const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            let foundElement = null;
+            
+            while (node = walker.nextNode()) {
+                const text = node.textContent.toLowerCase();
+                if (text.includes('plessis') && text.includes('pole')) {
+                    foundElement = node;
+                    break;
+                }
+            }
+            
+            if (!foundElement) {
+                console.log('❌ Aucun élément "plessis pole" trouvé');
+                return;
+            }
+
+            console.log('🎯 Élément trouvé:', foundElement.textContent.substring(0, 100));
+            
+            // Analyser tous les parents jusqu'à 15 niveaux
+            let currentElement = foundElement.parentElement;
+            let level = 1;
+            
+            while (currentElement && currentElement !== widgetElement && level <= 15) {
+                const rect = currentElement.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(currentElement);
+                
+                console.log(`📊 Niveau ${level}: ${currentElement.tagName}.${currentElement.className || 'no-class'}`);
+                console.log(`   📏 Taille: ${Math.round(rect.width)}x${Math.round(rect.height)}px`);
+                console.log(`   🎨 Display: ${computedStyle.display}, Position: ${computedStyle.position}`);
+                console.log(`   📄 Contenu (100 chars): "${currentElement.textContent.substring(0, 100).replace(/\n/g, ' ')}..."`);
+                
+                // Marquer visuellement chaque niveau
+                currentElement.style.outline = `2px solid hsl(${level * 25}, 70%, 50%)`;
+                currentElement.style.outlineOffset = `${level}px`;
+                
+                // Vérifier si c'est probablement un conteneur de cours
+                const isProbablyCourseContainer = (
+                    rect.height > 60 && rect.height < 300 &&
+                    rect.width > 200 &&
+                    !currentElement.textContent.toLowerCase().includes('lundi') &&
+                    !currentElement.textContent.toLowerCase().includes('mardi') &&
+                    (currentElement.textContent.match(/\d{1,2}[h:]\d{2}/g) || []).length <= 2
+                );
+                
+                if (isProbablyCourseContainer) {
+                    console.log(`🎯 CANDIDAT PROBABLE pour conteneur de cours: Niveau ${level}`);
+                    currentElement.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                }
+                
+                currentElement = currentElement.parentElement;
+                level++;
+            }
+
+            updateStatus(`🔍 Structure analysée - Vérifiez la console et les contours colorés`);
+        }
+
+        // Nouvelle fonction pour tester avec remontée intelligente
+        function testSmartRemove() {
+            console.log('🧠 === TEST SUPPRESSION INTELLIGENTE ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let removedCount = 0;
+            const targetEstablishments = ['plessis', 'pole', 'aerial'];
+            const removedElements = [];
+
+            targetEstablishments.forEach(establishment => {
+                const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                const nodesToCheck = [];
+                
+                while (node = walker.nextNode()) {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(establishment)) {
+                        nodesToCheck.push(node);
+                    }
+                }
+                
+                nodesToCheck.forEach(textNode => {
+                    let bestCandidate = null;
+                    let currentElement = textNode.parentElement;
+                    let level = 1;
+                    
+                    // Analyser jusqu'à 12 niveaux pour trouver le meilleur conteneur
+                    while (currentElement && currentElement !== widgetElement && level <= 12) {
+                        const rect = currentElement.getBoundingClientRect();
+                        const textContent = currentElement.textContent;
+                        
+                        // Critères pour un bon conteneur de cours
+                        const hasReasonableSize = rect.height > 60 && rect.height < 300 && rect.width > 200;
+                        const notDayContainer = !(/lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(textContent));
+                        const notWeekContainer = (textContent.match(/\d{1,2}[h:]\d{2}/g) || []).length <= 3;
+                        const hasCourseName = /pole|aerial|yoga|fitness|danse/i.test(textContent);
+                        
+                        if (hasReasonableSize && notDayContainer && notWeekContainer) {
+                            if (!bestCandidate || rect.height < bestCandidate.rect.height) {
+                                bestCandidate = {
+                                    element: currentElement,
+                                    level: level,
+                                    rect: rect,
+                                    hasCourseName: hasCourseName
+                                };
+                            }
+                        }
+                        
+                        currentElement = currentElement.parentElement;
+                        level++;
+                    }
+                    
+                    // Utiliser le meilleur candidat trouvé
+                    if (bestCandidate) {
+                        const elementToRemove = bestCandidate.element;
+                        console.log(`🎯 Suppression intelligente (niveau ${bestCandidate.level}): ${elementToRemove.tagName}.${elementToRemove.className}`);
+                        console.log(`📏 Taille: ${Math.round(bestCandidate.rect.width)}x${Math.round(bestCandidate.rect.height)}px`);
+                        console.log(`📄 Contenu: "${elementToRemove.textContent.substring(0, 150).replace(/\n/g, ' ')}..."`);
+                        
+                        removedElements.push({
+                            element: elementToRemove,
+                            parent: elementToRemove.parentElement,
+                            nextSibling: elementToRemove.nextSibling
+                        });
+                        elementToRemove.remove();
+                        removedCount++;
+                    } else {
+                        console.log(`❌ Aucun conteneur approprié trouvé pour: "${textNode.textContent.substring(0, 50)}"`);
+                    }
+                });
+            });
+
+            window.removedElements = removedElements;
+            updateStatus(`🧠 Suppression Intelligente: ${removedCount} cours supprimés`);
+        }
+
+        // Fonction ultra-précise basée sur l'analyse visuelle
+        function testUltraPrecise() {
+            console.log('🎯 === TEST ULTRA-PRÉCIS BASÉ SUR L\'ANALYSE VISUELLE ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let removedCount = 0;
+            const removedElements = [];
+
+            // Stratégie 1: Chercher par classes CSS communes des widgets Bsport
+            const possibleSelectors = [
+                '[class*="offer"]',
+                '[class*="session"]', 
+                '[class*="course"]',
+                '[class*="card"]',
+                '[class*="event"]',
+                '[class*="booking"]',
+                '[class*="activity"]',
+                '[class*="bs-offer"]',
+                '[class*="bs-session"]',
+                '[class*="bs-card"]',
+                '[class*="bs-activity"]',
+                'div[style*="background"]', // Les cours colorés
+                'div[style*="border"]'
+            ];
+
+            possibleSelectors.forEach(selector => {
+                try {
+                    const elements = widgetElement.querySelectorAll(selector);
+                    elements.forEach(element => {
+                        const text = element.textContent.toLowerCase();
+                        const rect = element.getBoundingClientRect();
+                        
+                        // Vérifier si contient un nom de studio à masquer
+                        if ((text.includes('plessis') || text.includes('pole') || text.includes('aerial')) &&
+                            rect.height > 50 && rect.height < 250 && rect.width > 100) {
+                            
+                            // Vérifier que ce n'est pas un conteneur de jour entier
+                            const dayHeaders = text.match(/lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/gi) || [];
+                            const timeSlots = text.match(/\d{1,2}[h:]\d{2}/g) || [];
+                            
+                            if (dayHeaders.length === 0 && timeSlots.length <= 2) {
+                                console.log(`🎯 Élément trouvé (${selector}): ${element.tagName}.${element.className}`);
+                                console.log(`📏 Taille: ${Math.round(rect.width)}x${Math.round(rect.height)}px`);
+                                console.log(`📄 Contenu: "${text.substring(0, 100).replace(/\n/g, ' ')}..."`);
+                                
+                                element.style.border = '3px solid red';
+                                element.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                                removedCount++;
+                            }
+                        }
+                    });
+                } catch (e) {
+                    // Ignorer les sélecteurs invalides
+                }
+            });
+
+            // Stratégie 2: Chercher par structure de contenu
+            const walker = document.createTreeWalker(widgetElement, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            const processedElements = new Set();
+            
+            while (node = walker.nextNode()) {
+                const text = node.textContent.toLowerCase();
+                if ((text.includes('plessis') || text.includes('pole') || text.includes('aerial')) &&
+                    text.length > 10 && text.length < 200) {
+                    
+                    let current = node.parentElement;
+                    let attempts = 0;
+                    
+                    while (current && current !== widgetElement && attempts < 8) {
+                        if (processedElements.has(current)) {
+                            break;
+                        }
+                        
+                        const rect = current.getBoundingClientRect();
+                        const currentText = current.textContent;
+                        
+                        // Critères pour un conteneur de cours valide
+                        const hasGoodSize = rect.height > 60 && rect.height < 200 && rect.width > 150;
+                        const hasTimeInfo = /\d{1,2}[h:]\d{2}/.test(currentText);
+                        const hasLevelInfo = /(débutant|intermédiaire|tous niveaux)/i.test(currentText);
+                        const noDayHeaders = !/lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(currentText);
+                        const notTooManyTimes = (currentText.match(/\d{1,2}[h:]\d{2}/g) || []).length <= 2;
+                        
+                        if (hasGoodSize && noDayHeaders && notTooManyTimes && (hasTimeInfo || hasLevelInfo)) {
+                            if (!processedElements.has(current)) {
+                                console.log(`🎯 Conteneur de cours détecté: ${current.tagName}.${current.className}`);
+                                console.log(`📏 Taille: ${Math.round(rect.width)}x${Math.round(rect.height)}px`);
+                                console.log(`⏰ Horaires trouvés: ${(currentText.match(/\d{1,2}[h:]\d{2}/g) || []).join(', ')}`);
+                                console.log(`📄 Contenu: "${currentText.substring(0, 120).replace(/\n/g, ' ')}..."`);
+                                
+                                current.style.border = '4px solid blue';
+                                current.style.backgroundColor = 'rgba(0, 0, 255, 0.1)';
+                                processedElements.add(current);
+                                removedCount++;
+                                break;
+                            }
+                        }
+                        
+                        current = current.parentElement;
+                        attempts++;
+                    }
+                }
+            }
+
+            updateStatus(`🎯 Test Ultra-Précis: ${removedCount} éléments détectés (bordures rouge/bleu)`);
+        }
+
+        // Fonction finale basée sur l'inspection réelle
+        function testFinalPrecis() {
+            console.log('🎯 === TEST FINAL PRÉCIS (bs-card-offer) ===');
+            clearHighlights();
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            let hiddenCount = 0;
+            const removedElements = [];
+            const targetEstablishments = ['plessis', 'pole', 'aerial'];
+
+            // Cibler précisément les bs-card-offer
+            const cardOffers = widgetElement.querySelectorAll('button.bs-card-offer, .bs-card-offer');
+            console.log(`🔍 ${cardOffers.length} cartes bs-card-offer trouvées`);
+
+            cardOffers.forEach((cardOffer, index) => {
+                const text = cardOffer.textContent.toLowerCase();
+                const shouldHide = targetEstablishments.some(establishment => text.includes(establishment));
+                
+                if (shouldHide) {
+                    console.log(`🎯 Carte ${index + 1} à masquer:`);
+                    console.log(`   📄 Contenu: "${cardOffer.textContent.substring(0, 100).replace(/\n/g, ' ')}..."`);
+                    console.log(`   📏 Taille: ${cardOffer.offsetWidth}x${cardOffer.offsetHeight}px`);
+                    console.log(`   🏷️ Classes: ${cardOffer.className}`);
+                    
+                    // Test avec display none
+                    cardOffer.style.display = 'none';
+                    cardOffer.setAttribute('data-hidden-by-filter', 'true');
+                    
+                    removedElements.push(cardOffer);
+                    hiddenCount++;
+                } else {
+                    console.log(`✅ Carte ${index + 1} gardée (Saint-Fargeau):`);
+                    console.log(`   📄 Contenu: "${cardOffer.textContent.substring(0, 50).replace(/\n/g, ' ')}..."`);
+                }
+            });
+
+            window.removedElements = removedElements;
+            updateStatus(`🎯 Test Final: ${hiddenCount} cartes bs-card-offer masquées`);
+            
+            if (hiddenCount === 0) {
+                console.log('⚠️ Aucune carte masquée. Essayons une approche alternative...');
+                
+                // Alternative: chercher les wrapper parents
+                const offerWrappers = widgetElement.querySelectorAll('.bs-week__cardMode__offerRow__offer-wrapper');
+                console.log(`🔍 ${offerWrappers.length} offer-wrapper trouvés`);
+                
+                offerWrappers.forEach((wrapper, index) => {
+                    const text = wrapper.textContent.toLowerCase();
+                    const shouldHide = targetEstablishments.some(establishment => text.includes(establishment));
+                    
+                    if (shouldHide) {
+                        console.log(`🎯 Wrapper ${index + 1} masqué (alternative)`);
+                        wrapper.style.display = 'none';
+                        hiddenCount++;
+                    }
+                });
+                
+                updateStatus(`🎯 Test Final (Alternative): ${hiddenCount} wrappers masqués`);
+            }
+        }
+
+        // Fonction pour restaurer les éléments cachés par le test final
+        function restoreFinalTest() {
+            console.log('🔄 === RESTAURATION TEST FINAL ===');
+            
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            // Restaurer les bs-card-offer
+            const hiddenCards = widgetElement.querySelectorAll('[data-hidden-by-filter="true"]');
+            hiddenCards.forEach(card => {
+                card.style.display = '';
+                card.removeAttribute('data-hidden-by-filter');
+            });
+
+            // Restaurer les wrappers
+            const hiddenWrappers = widgetElement.querySelectorAll('.bs-week__cardMode__offerRow__offer-wrapper[style*="display: none"]');
+            hiddenWrappers.forEach(wrapper => {
+                wrapper.style.display = '';
+            });
+
+            updateStatus(`🔄 Éléments restaurés`);
+        }
+
+        function clearHighlights() {
+            const widgetElement = document.getElementById('bsport-widget-simple');
+            if (!widgetElement) return;
+
+            // Nettoyer tous les surlignages et styles de test
+            widgetElement.querySelectorAll('*').forEach(el => {
+                el.classList.remove('highlighted-red', 'highlighted-blue', 'highlighted-green');
+                el.style.opacity = '';
+                el.style.filter = '';
+                el.style.visibility = '';
+                el.style.display = '';
+            });
+
+            // Restaurer les éléments supprimés si nécessaire
+            if (window.removedElements) {
+                window.removedElements.forEach(item => {
+                    if (item.parent && item.element) {
+                        if (item.nextSibling) {
+                            item.parent.insertBefore(item.element, item.nextSibling);
+                        } else {
+                            item.parent.appendChild(item.element);
+                        }
+                    }
+                });
+                window.removedElements = [];
+            }
+
+            console.log('🧹 Nettoyage terminé');
+            updateStatus('🧹 Tous les tests nettoyés');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initialisation du test de filtrage');
+            
+            // Configurer les boutons de filtre
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const filterKey = e.target.getAttribute('data-filter');
+                    handleFilterClick(filterKey);
+                });
+            });
+
+            // Monter le widget Bsport
+            updateStatus('🔄 Montage du widget Bsport...');
+            mountBsportWidget(widgetConfig);
+            
+            // Vérifier le montage après un délai
+            setTimeout(() => {
+                const widgetElement = document.getElementById('bsport-widget-simple');
+                if (widgetElement && widgetElement.innerHTML.length > 100) {
+                    updateStatus('✅ Widget chargé - Filtrage prêt !');
+                } else {
+                    updateStatus('⚠️ Widget en cours de chargement...');
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html> 

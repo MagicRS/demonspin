@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartes & Forfaits - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: transparent;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #38767d 0%, #2d5a61 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .widget-container {
+            padding: 40px 30px;
+            min-height: 600px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38767d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #38767d;
+        }
+
+        .info-section h3 {
+            color: #38767d;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-section li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-section li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #38767d;
+            font-weight: bold;
+        }
+
+        /* Masquer le bug "Cartes cours collectifs" */
+        .hide-collectifs {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Masquer la barre de recherche du widget des abonnements */
+        #bsport-widget-552548 input,
+        #bsport-widget-552548 input[type="text"],
+        #bsport-widget-552548 input[type="search"],
+        #bsport-widget-552548 .search-input,
+        #bsport-widget-552548 .search-bar,
+        #bsport-widget-552548 form:has(input),
+        #bsport-widget-552548 div:has(input[placeholder*="echercher"]),
+        #bsport-widget-552548 div:has(input[placeholder*="search"]) {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Réduire l'espace sous le widget des cartes */
+        #bsport-widget-607433 {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* Réduire l'espace au-dessus du titre "Abonnements" */
+        #bsport-widget-552548 {
+            margin-top: 0 !important;
+        }
+
+
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                width: 100vw;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .header {
+                padding: 20px 10px;
+            }
+
+            .widget-container {
+                padding: 5px;
+            }
+
+            .info-section {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            #bsport-widget-607433,
+            #bsport-widget-552548 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #bsport-widget-607433 .card,
+            #bsport-widget-607433 .pass-item,
+            #bsport-widget-607433 .pass-card,
+            #bsport-widget-552548 .card,
+            #bsport-widget-552548 .subscription-item,
+            #bsport-widget-552548 .subscription-card {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            #bsport-widget-607433 button,
+            #bsport-widget-607433 .btn,
+            #bsport-widget-607433 .cart-button,
+            #bsport-widget-607433 .add-to-cart,
+            #bsport-widget-607433 svg,
+            #bsport-widget-607433 .icon,
+            #bsport-widget-552548 button,
+            #bsport-widget-552548 .btn,
+            #bsport-widget-552548 .cart-button,
+            #bsport-widget-552548 .add-to-cart,
+            #bsport-widget-552548 svg,
+            #bsport-widget-552548 .icon {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cartes & Forfaits</h1>
+            <p>Choisissez votre formule et réservez vos cours en toute simplicité</p>
+        </div>
+
+        <div class="widget-container">
+            <div class="info-section">
+                <h3>Nos formules disponibles</h3>
+                <ul>
+                    <li>Cours à l'unité : 23€ (cours classique) / 12€ (souplesse)</li>
+                    <li>Cartes 4, 10, 20 ou 40 crédits avec tarifs dégressifs</li>
+                    <li>2 abonnements avantageux : 4 cours/semaine ou cours illimités</li>
+                    <li>Tarifs étudiants sur présentation de la carte</li>
+                    <li>Cours d'essai à 10€ pour découvrir</li>
+                </ul>
+            </div>
+
+            <!-- Widget Bsport - Cartes -->
+            <div id="bsport-widget-607433">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Chargement du système de réservation...</p>
+                </div>
+            </div>
+
+            <!-- Widget Bsport - Abonnements -->
+            <h4 class="abonnements-title">Abonnements</h4>
+            <style>
+                                 @media (max-width: 767px) {
+                     .abonnements-title {
+                         color: #333;
+                         margin: 5px 0 5px 20px;
+                         font-size: 1.1rem;
+                         font-weight: 400;
+                     }
+                 }
+                 @media (min-width: 768px) {
+                     .abonnements-title {
+                         color: #333;
+                         margin: 5px 0 5px 48px;
+                         font-size: 1.1rem;
+                         font-weight: 400;
+                     }
+                 }
+            </style>
+            <div id="bsport-widget-552548">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Chargement des abonnements...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bsport -->
+    <script id="insert-bsport-widget-cdn">
+        !function (b, s, p, o, r, t) { 
+            !typeof window.BsportWidget !== "undefined" && !document.getElementById("bsport-widget-cdn") && !function () { 
+                m = b.createElement(s), m.id = "bsport-widget-cdn", m.src = p, b.getElementsByTagName("head")[0].appendChild(m) 
+            }() 
+        }(document, "script", "https://cdn.bsport.io/scripts/widget.js")
+    </script>
+
+    <script id="bsport-widget-mount">
+        function hideCollectifsText() {
+            const widgetContainer = document.getElementById('bsport-widget-607433');
+            if (!widgetContainer) return;
+            
+            // Rechercher tous les éléments avec du texte
+            const allElements = widgetContainer.querySelectorAll('*');
+            allElements.forEach(element => {
+                const text = element.textContent?.trim();
+                
+                // Masquer uniquement si c'est exactement "Cartes cours collectifs"
+                if (text === 'Cartes cours collectifs' || text === 'Cartes cours collectifs ') {
+                    element.classList.add('hide-collectifs');
+                    console.log('Masked "Cartes cours collectifs" text element');
+                }
+            });
+        }
+
+        function hideBsportLogo() {
+            const widgetContainer = document.getElementById('bsport-widget-607433');
+            if (!widgetContainer) return;
+            
+            console.log('Attempting to hide BSport logo...');
+            
+            // 1. Supprimer toutes les images BSport
+            const allImages = widgetContainer.querySelectorAll('img');
+            allImages.forEach(img => {
+                const src = img.src?.toLowerCase() || '';
+                const alt = img.alt?.toLowerCase() || '';
+                
+                if (src.includes('bsport') || alt.includes('bsport') || src.includes('logo')) {
+                    // Supprimer l'image et son conteneur parent si nécessaire
+                    let targetToRemove = img;
+                    const parent = img.parentElement;
+                    
+                    // Si le parent ne contient que cette image, supprimer le parent aussi
+                    if (parent && parent.children.length === 1 && parent.tagName !== 'BODY') {
+                        targetToRemove = parent;
+                    }
+                    
+                    targetToRemove.remove();
+                    console.log('Removed BSport logo image:', img);
+                }
+            });
+
+            // 2. Supprimer les éléments avec du texte "bsport"
+            const allElements = widgetContainer.querySelectorAll('*');
+            allElements.forEach(element => {
+                const text = element.textContent?.trim().toLowerCase();
+                
+                if (text === 'bsport' || text.includes('powered by bsport')) {
+                    let targetToRemove = element;
+                    const parent = element.parentElement;
+                    
+                    // Si le parent ne contient que cet élément, supprimer le parent
+                    if (parent && parent.children.length === 1 && parent !== widgetContainer) {
+                        targetToRemove = parent;
+                    }
+                    
+                    targetToRemove.remove();
+                    console.log('Removed BSport text element:', element);
+                }
+            });
+
+            // 3. Supprimer les liens vers BSport
+            const allLinks = widgetContainer.querySelectorAll('a');
+            allLinks.forEach(link => {
+                const href = link.href?.toLowerCase() || '';
+                const text = link.textContent?.trim().toLowerCase() || '';
+                
+                if (href.includes('bsport') || text.includes('bsport')) {
+                    link.remove();
+                    console.log('Removed BSport link:', link);
+                }
+            });
+
+            // 4. Supprimer les conteneurs avec des classes BSport
+            const bsportElements = widgetContainer.querySelectorAll('[class*="bsport"], [id*="bsport"]');
+            bsportElements.forEach(element => {
+                if (element !== widgetContainer) { // Ne pas supprimer le widget lui-même
+                    const hasOtherContent = element.children.length > 1 || 
+                                          (element.textContent.trim() && !element.textContent.toLowerCase().includes('bsport'));
+                    
+                    if (!hasOtherContent) {
+                        element.remove();
+                        console.log('Removed BSport branded element:', element);
+                    }
+                }
+            });
+        }
+
+        function hideSearchBar() {
+            const widgetContainer = document.getElementById('bsport-widget-552548');
+            if (!widgetContainer) return;
+            
+            console.log('Attempting to hide search bar...');
+            
+            // 1. Identifier et supprimer tous les inputs ET leurs conteneurs parents
+            const allInputs = widgetContainer.querySelectorAll('input');
+            allInputs.forEach((input, index) => {
+                console.log(`Found input ${index + 1}:`, input);
+                
+                // Remonter dans la hiérarchie pour trouver le conteneur principal
+                let currentElement = input;
+                let searchContainer = null;
+                
+                // Chercher le conteneur de la barre de recherche (jusqu'à 5 niveaux)
+                for (let i = 0; i < 5; i++) {
+                    currentElement = currentElement.parentElement;
+                    if (!currentElement || currentElement === widgetContainer) break;
+                    
+                    // Si ce conteneur semble être le wrapper de la recherche
+                    const hasOnlySearchElements = currentElement.children.length <= 3;
+                    const containsSearchInput = currentElement.querySelector('input');
+                    
+                    if (hasOnlySearchElements && containsSearchInput) {
+                        searchContainer = currentElement;
+                        console.log(`Found search container:`, searchContainer);
+                        break;
+                    }
+                }
+                
+                // Supprimer le conteneur trouvé, sinon juste l'input
+                if (searchContainer) {
+                    searchContainer.remove();
+                    console.log('Removed search container');
+                } else {
+                    input.remove();
+                    console.log('Removed input only');
+                }
+            });
+
+            // 2. Supprimer tous les éléments qui contiennent "rechercher" et leurs parents
+            const allElements = Array.from(widgetContainer.querySelectorAll('*'));
+            allElements.forEach(element => {
+                const text = element.textContent?.trim().toLowerCase();
+                if (text === 'rechercher' || text === 'rechercher...' || text === 'search') {
+                    // Remonter pour trouver le conteneur visuel
+                    let targetToRemove = element;
+                    let parent = element.parentElement;
+                    
+                    // Si le parent ne contient que quelques éléments, c'est probablement le conteneur de la barre
+                    while (parent && parent !== widgetContainer && parent.children.length <= 3) {
+                        targetToRemove = parent;
+                        parent = parent.parentElement;
+                    }
+                    
+                    targetToRemove.remove();
+                    console.log('Removed search text element and container:', targetToRemove);
+                }
+            });
+
+            // 3. Supprimer tous les formulaires et divs qui pourraient être la barre
+            const potentialSearchElements = widgetContainer.querySelectorAll('form, div[class*="search"], div[class*="input"], section[class*="search"]');
+            potentialSearchElements.forEach(element => {
+                const hasInput = element.querySelector('input');
+                const hasSearchText = element.textContent.toLowerCase().includes('rechercher');
+                
+                if (hasInput || hasSearchText) {
+                    element.remove();
+                    console.log('Removed potential search element:', element);
+                }
+            });
+
+            // 4. Supprimer les éléments vides qui pourraient rester
+            setTimeout(() => {
+                const emptyDivs = widgetContainer.querySelectorAll('div:empty, section:empty');
+                emptyDivs.forEach(div => {
+                    if (div.children.length === 0 && div.textContent.trim() === '') {
+                        div.remove();
+                        console.log('Removed empty container:', div);
+                    }
+                });
+
+                // 5. Supprimer les éléments avec des ombres ou bordures résiduelles
+                const allDivs = widgetContainer.querySelectorAll('div, section, form');
+                allDivs.forEach(element => {
+                    const computedStyle = window.getComputedStyle(element);
+                    const hasBoxShadow = computedStyle.boxShadow && computedStyle.boxShadow !== 'none';
+                    const hasBorder = computedStyle.border && computedStyle.border !== 'none';
+                    const isEmpty = element.children.length === 0 && element.textContent.trim() === '';
+                    const isSmall = element.offsetHeight < 60; // Petits éléments probablement résiduels
+
+                    // Si c'est un petit élément vide avec une ombre ou bordure
+                    if (isEmpty && isSmall && (hasBoxShadow || hasBorder)) {
+                        element.remove();
+                        console.log('Removed shadow/border residual element:', element);
+                    }
+                });
+
+                // 6. Masquer tous les éléments avec box-shadow dans le widget abonnements
+                const shadowElements = widgetContainer.querySelectorAll('*');
+                shadowElements.forEach(element => {
+                    const computedStyle = window.getComputedStyle(element);
+                    if (computedStyle.boxShadow && computedStyle.boxShadow !== 'none' && element.offsetHeight < 50) {
+                        element.style.setProperty('box-shadow', 'none', 'important');
+                        element.style.setProperty('border', 'none', 'important');
+                        console.log('Removed shadow from element:', element);
+                    }
+                });
+            }, 200);
+        }
+
+        function MountBsportWidget(config, repeat=1) {
+            if (repeat > 50) { return }
+            if (!window.BsportWidget) {
+                return setTimeout(() => {
+                    MountBsportWidget(config,repeat+1)
+                }, 100 * repeat || 1)
+            }
+            
+            // Masquer le loading du widget spécifique une fois chargé
+            const parentElement = config.parentElement;
+            const widgetContainer = document.getElementById(parentElement);
+            const loadingEl = widgetContainer ? widgetContainer.querySelector('.loading') : null;
+            if (loadingEl) {
+                loadingEl.style.display = 'none';
+            }
+            
+            BsportWidget.mount(config)
+            
+            // Masquer les éléments spécifiques selon le widget
+            if (parentElement === 'bsport-widget-607433') {
+                // Widget des cartes : masquer le bug "Cartes cours collectifs" et le logo BSport
+                setTimeout(() => {
+                    hideCollectifsText();
+                    hideBsportLogo();
+                    
+                    // Observer pour détecter les changements dynamiques
+                    const observer = new MutationObserver(() => {
+                        setTimeout(() => {
+                            hideCollectifsText();
+                            hideBsportLogo();
+                        }, 100);
+                    });
+                    
+                    if (widgetContainer) {
+                        observer.observe(widgetContainer, { 
+                            childList: true, 
+                            subtree: true 
+                        });
+                    }
+                }, 1500);
+            } else if (parentElement === 'bsport-widget-552548') {
+                // Widget des abonnements : masquer la barre de recherche
+                setTimeout(() => {
+                    hideSearchBar();
+                    
+                    // Observer pour détecter les changements dynamiques
+                    const observer = new MutationObserver(() => {
+                        setTimeout(() => hideSearchBar(), 100);
+                    });
+                    
+                    if (widgetContainer) {
+                        observer.observe(widgetContainer, { 
+                            childList: true, 
+                            subtree: true 
+                        });
+                    }
+                }, 1500);
+            }
+        }
+    </script>
+
+    <script>
+        // Widget pour les cartes
+        MountBsportWidget({
+            "parentElement": "bsport-widget-607433",
+            "companyId": 553,
+            "franchiseId": null,
+            "dialogMode": 1,
+            "widgetType": "pass", 
+            "showFab": false,
+            "fullScreenPopup": false,
+            "styles": undefined,
+            "config": {
+                "pass": {
+                    "paymentPackCategories": [],
+                    "privatePassCategories": [],
+                    "hidePaymentPack": false,
+                    "hidePrivatePass": true
+                }
+            }  
+        })
+
+        // Widget pour les abonnements
+        MountBsportWidget({
+            "parentElement": "bsport-widget-552548",
+            "companyId": 553,
+            "franchiseId": null,
+            "dialogMode": 1,
+            "widgetType": "subscription", 
+            "showFab": false,
+            "fullScreenPopup": false,
+            "styles": undefined,
+            "config": {
+                "subscription": {}
+            }  
+        })
+    </script>
+</body>
+</html> 

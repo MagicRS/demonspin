@@ -1,0 +1,221 @@
+<!-- Import de la police Poppins -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  #studios {
+    padding: 2rem 2rem;
+    background-color: #fdfdfd;
+  }
+
+  #studios h2 {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  #studios p.subtitle {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .studio-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .studio-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    padding-bottom: 0.25rem;
+    position: relative;
+  }
+
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .carousel-slide {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    flex-shrink: 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    border-radius: 50%;
+  }
+
+  .carousel-arrow.left {
+    left: 10px;
+  }
+
+  .carousel-arrow.right {
+    right: 10px;
+  }
+
+  .studio-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .studio-content h3 {
+    font-size: 20px;
+    margin-bottom: 0.8rem;
+  }
+
+  .studio-content p {
+    font-size: 16px;
+    margin-bottom: 1.5rem;
+  }
+
+  .studio-content a {
+    color: #fff;
+    background-color: #033a41;
+    padding: 0.7rem 1.2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+    margin-top: auto;
+  }
+
+  @media (max-width: 768px) {
+    #studios {
+      padding: 2rem 1rem;
+    }
+
+    #studios h2 {
+      font-size: 32px;
+    }
+
+    .studio-cards {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .studio-card {
+      width: 100%;
+      max-width: 95vw;
+    }
+
+    .studio-content h3 {
+      font-size: 18px;
+    }
+  }
+</style>
+
+<section id="studios">
+
+  <div class="studio-cards">
+
+    <!-- Studio Le Plessis -->
+    <div class="studio-card">
+      <div class="carousel-container">
+        <div class="carousel-slide" id="carousel-slide">
+          <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-pole-dance-dJobP23vg6HVGP3y.png" alt="Studio Le Plessis-Pâté 1">
+          <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-cerceau-aerien-mk3J4wBKMGuvRN7n.png" alt="Studio Le Plessis-Pâté 2">
+          <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/demon-spin-salle-etirrement-dOqDZeOgNPSDeKax.png" alt="Studio Le Plessis-Pâté 3">
+        </div>
+        <button class="carousel-arrow left" onclick="prevSlide()">‹</button>
+        <button class="carousel-arrow right" onclick="nextSlide()">›</button>
+      </div>
+      <div class="studio-content">
+        <h3>📍 Le Plessis-Pâté (91)</h3>
+        <p>
+          Tous nos cours y sont proposés :<br>
+          <strong>Pole dance, Cerceau aérien, Souplesse, Exotic, Strap, Chorée, Pilate, BootyKat</strong>
+        </p>
+        <a href="https://demonspin.fr/le-plessis-pate" target="_top">Découvrir le studio</a>
+      </div>
+    </div>
+
+    <!-- Studio Saint-Fargeau -->
+    <div class="studio-card">
+      <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/studio-pole-dance-77-YX4xjVr2OpSwqnWO.png" alt="Studio Saint-Fargeau-Ponthierry">
+      <div class="studio-content">
+        <h3>📍 Saint-Fargeau-Ponthierry (77)</h3>
+        <p>
+          Cours proposés :<br>
+          <strong>Uniquement pole dance</strong>
+        </p>
+        <a href="https://demonspin.fr/saint-fargeau-ponthierry" target="_top">Découvrir le studio</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  let currentIndex = 0;
+  const slide = document.getElementById("carousel-slide");
+  const images = slide.querySelectorAll("img");
+  const totalSlides = images.length;
+
+  let intervalId;
+
+  function updateCarousel() {
+    slide.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % totalSlides;
+    updateCarousel();
+    resetAutoSlide();
+  }
+
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+    updateCarousel();
+    resetAutoSlide();
+  }
+
+  function startAutoSlide() {
+    intervalId = setInterval(() => {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }, 5000);
+  }
+
+  function resetAutoSlide() {
+    clearInterval(intervalId);
+    startAutoSlide();
+  }
+
+  startAutoSlide();
+</script>

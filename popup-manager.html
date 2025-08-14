@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Manager - Demon Spin</title>
+</head>
+<body>
+
+<script>
+// ========================================
+// VARIABLES CONFIGURABLES
+// ========================================
+
+// Configuration du contenu du pop-up
+const POPUP_CONFIG = {
+    // Contenu du pop-up
+    heading1: "💕 Saint-Valentin Spéciale",
+    heading2: "Cours de Pole Dance en Couple",
+    description: "Découvrez une expérience unique et sensuelle avec votre partenaire ! Nos cours de pole dance en couple sont parfaits pour créer des souvenirs inoubliables et renforcer votre complicité dans une ambiance romantique et bienveillante.",
+    buttonText: "Réserver maintenant",
+    buttonUrl: "https://demon-spin-ae0rrn3jmghak7nr.builder-preview.com/event",
+    imageUrl: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    availabilityText: "10 places (5 couples)", // Texte des places disponibles
+    
+    // Configuration des couleurs
+    titleColor: "#d63384", // Couleur du titre principal (rose fuchsia)
+    buttonColorStart: "#d63384", // Couleur de début du dégradé du bouton
+    buttonColorEnd: "#e91e63", // Couleur de fin du dégradé du bouton
+    
+    // Configuration de l'affichage
+    delayBeforeShow: 3000, // Délai avant affichage en millisecondes (3 secondes)
+    
+    // Configuration du comportement
+    enabled: false, // Activer ou désactiver le pop-up (true/false)
+    maxDate: "2025-07-20", // Date limite d'affichage du pop-up (format YYYY-MM-DD) - null pour pas de limite
+    showOnce: true, // Afficher une seule fois par session
+    cookieName: "demon_spin_valentine_popup", // Nom du cookie pour mémoriser
+    cookieExpireDays: 7, // Durée de validité du cookie en jours
+    
+    // Mode debug pour diagnostiquer les problèmes
+    debug: false // Afficher les informations de debug dans la console
+};
+
+// ========================================
+// STYLES CSS
+// ========================================
+
+const popupStyles = `
+<style>
+/* Overlay du pop-up */
+.demon-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.demon-popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Container principal du pop-up */
+.demon-popup-container {
+    background: #fff;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.demon-popup-overlay.show .demon-popup-container {
+    transform: scale(1);
+}
+
+/* Bouton de fermeture */
+.demon-popup-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    z-index: 10;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.demon-popup-close:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+/* Contenu du pop-up */
+.demon-popup-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 400px;
+}
+
+/* Section texte */
+.demon-popup-text {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.demon-popup-heading1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: ${POPUP_CONFIG.titleColor};
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+
+.demon-popup-heading2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+}
+
+.demon-popup-description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 30px 0;
+}
+
+.demon-popup-button {
+    background: linear-gradient(135deg, ${POPUP_CONFIG.buttonColorStart}, ${POPUP_CONFIG.buttonColorEnd});
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    align-self: flex-start;
+}
+
+.demon-popup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px ${POPUP_CONFIG.buttonColorStart}66;
+}
+
+/* Section image */
+.demon-popup-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.demon-popup-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Texte des places disponibles sur l'image */
+.demon-popup-availability {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .demon-popup-container {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .demon-popup-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 250px;
+    }
+    
+    .demon-popup-text {
+        padding: 30px 25px 20px 25px;
+        order: 1;
+    }
+    
+    .demon-popup-image {
+        order: 2;
+        min-height: 250px;
+    }
+    
+    .demon-popup-heading1 {
+        font-size: 24px;
+    }
+    
+    .demon-popup-heading2 {
+        font-size: 18px;
+    }
+    
+    .demon-popup-description {
+        font-size: 14px;
+    }
+    
+    .demon-popup-button {
+        padding: 12px 25px;
+        font-size: 15px;
+    }
+    
+    .demon-popup-availability {
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .demon-popup-text {
+        padding: 25px 20px 15px 20px;
+    }
+    
+    .demon-popup-heading1 {
+        font-size: 22px;
+    }
+    
+    .demon-popup-description {
+        margin-bottom: 20px;
+    }
+}
+</style>
+`;
+
+// ========================================
+// FONCTIONS UTILITAIRES
+// ========================================
+
+// Gestion des cookies
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+// ========================================
+// CRÉATION ET GESTION DU POP-UP
+// ========================================
+
+function createPopup() {
+    // Mode debug : afficher les informations de diagnostic
+    if (POPUP_CONFIG.debug) {
+        console.log('=== DEMON SPIN POPUP DEBUG ===');
+        console.log('Enabled:', POPUP_CONFIG.enabled);
+        console.log('Max Date:', POPUP_CONFIG.maxDate);
+        console.log('Current Date:', new Date().toISOString());
+        console.log('Show Once:', POPUP_CONFIG.showOnce);
+        console.log('Cookie Value:', getCookie(POPUP_CONFIG.cookieName));
+    }
+    
+    // Vérifier si le pop-up est activé
+    if (!POPUP_CONFIG.enabled) {
+        if (POPUP_CONFIG.debug) console.log('❌ Pop-up désactivé (enabled = false)');
+        return;
+    }
+    
+    // Vérifier si la date limite n'est pas dépassée
+    if (POPUP_CONFIG.maxDate) {
+        const currentDate = new Date();
+        const maxDate = new Date(POPUP_CONFIG.maxDate);
+        // Ajouter 23:59:59 à la date limite pour inclure toute la journée
+        maxDate.setHours(23, 59, 59, 999);
+        
+        if (POPUP_CONFIG.debug) {
+            console.log('Date actuelle:', currentDate.toISOString());
+            console.log('Date limite:', maxDate.toISOString());
+            console.log('Date dépassée?', currentDate > maxDate);
+        }
+        
+        if (currentDate > maxDate) {
+            if (POPUP_CONFIG.debug) console.log('❌ Date limite dépassée');
+            return;
+        }
+    }
+    
+    // Vérifier si le pop-up a déjà été affiché
+    if (POPUP_CONFIG.showOnce && getCookie(POPUP_CONFIG.cookieName)) {
+        if (POPUP_CONFIG.debug) console.log('❌ Pop-up déjà affiché (cookie trouvé)');
+        return;
+    }
+    
+    if (POPUP_CONFIG.debug) console.log('✅ Toutes les vérifications passées - Affichage du pop-up');
+    
+    // Injecter les styles
+    document.head.insertAdjacentHTML('beforeend', popupStyles);
+    
+    // Créer le HTML du pop-up
+    const popupHTML = `
+        <div id="demon-popup-overlay" class="demon-popup-overlay">
+            <div class="demon-popup-container">
+                <button class="demon-popup-close" onclick="closePopup()">×</button>
+                <div class="demon-popup-content">
+                    <div class="demon-popup-text">
+                        <h1 class="demon-popup-heading1">${POPUP_CONFIG.heading1}</h1>
+                        <h2 class="demon-popup-heading2">${POPUP_CONFIG.heading2}</h2>
+                        <p class="demon-popup-description">${POPUP_CONFIG.description}</p>
+                        <a href="${POPUP_CONFIG.buttonUrl}" class="demon-popup-button" onclick="closePopup()">${POPUP_CONFIG.buttonText}</a>
+                    </div>
+                                         <div class="demon-popup-image">
+                         <img src="${POPUP_CONFIG.imageUrl}" alt="Cours de pole dance en couple - Saint-Valentin">
+                         <div class="demon-popup-availability">${POPUP_CONFIG.availabilityText}</div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Ajouter le pop-up au DOM
+    document.body.insertAdjacentHTML('beforeend', popupHTML);
+    
+    // Afficher le pop-up après le délai configuré
+    setTimeout(() => {
+        showPopup();
+    }, POPUP_CONFIG.delayBeforeShow);
+}
+
+function showPopup() {
+    const overlay = document.getElementById('demon-popup-overlay');
+    if (overlay) {
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Empêcher le scroll
+    }
+}
+
+function closePopup() {
+    const overlay = document.getElementById('demon-popup-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        document.body.style.overflow = ''; // Réactiver le scroll
+        
+        // Marquer comme affiché si configuré
+        if (POPUP_CONFIG.showOnce) {
+            setCookie(POPUP_CONFIG.cookieName, 'shown', POPUP_CONFIG.cookieExpireDays);
+        }
+        
+        // Supprimer du DOM après l'animation
+        setTimeout(() => {
+            overlay.remove();
+        }, 300);
+    }
+}
+
+// Fermer en cliquant sur l'overlay
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'demon-popup-overlay') {
+        closePopup();
+    }
+});
+
+// Fermer avec la touche Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePopup();
+    }
+});
+
+// ========================================
+// INITIALISATION
+// ========================================
+
+// Attendre que le DOM soit chargé
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createPopup);
+} else {
+    createPopup();
+}
+
+// Exposer la fonction de fermeture globalement
+window.closePopup = closePopup;
+</script>
+
+<!-- 
+========================================
+INSTRUCTIONS D'INTÉGRATION
+========================================
+
+Pour intégrer ce pop-up dans votre site :
+
+1. Copiez tout le contenu de la balise <script> (lignes 10 à fin)
+2. Collez-le dans le <head> de votre site ou juste avant la fermeture du </body>
+
+========================================
+PERSONNALISATION
+========================================
+
+Pour personnaliser le pop-up, modifiez les variables dans POPUP_CONFIG :
+
+- heading1 : Premier titre (grand)
+- heading2 : Deuxième titre (moyen)
+- description : Texte descriptif
+- buttonText : Texte du bouton
+- buttonUrl : URL de destination du bouton
+- imageUrl : URL de l'image
+- availabilityText : Texte des places disponibles (affiché sur l'image)
+- titleColor : Couleur du titre principal (format hex: #xxxxxx)
+- buttonColorStart : Couleur de début du dégradé du bouton (format hex: #xxxxxx)
+- buttonColorEnd : Couleur de fin du dégradé du bouton (format hex: #xxxxxx)
+- delayBeforeShow : Délai avant affichage (millisecondes)
+- enabled : Activer ou désactiver le pop-up (true/false)
+- maxDate : Date limite d'affichage du pop-up (format "YYYY-MM-DD") - null pour pas de limite
+- showOnce : Afficher une seule fois par session (true/false)
+- cookieExpireDays : Durée de validité du cookie
+- debug : Activer les logs de debug dans la console (true/false)
+
+========================================
+EXEMPLES D'AUTRES CONFIGURATIONS
+========================================
+
+// Pour un cours de yoga (couleurs vertes) :
+heading1: "🧘‍♀️ Nouveau Cours",
+heading2: "Yoga Débutant",
+description: "Découvrez notre nouveau cours de yoga pour débutants...",
+imageUrl: "URL_IMAGE_YOGA",
+availabilityText: "15 places disponibles",
+titleColor: "#28a745",
+buttonColorStart: "#28a745",
+buttonColorEnd: "#20c997",
+
+// Pour une promotion (couleurs orange) :
+heading1: "🎉 Promotion Limitée",
+heading2: "50% sur votre première carte",
+description: "Profitez de notre offre exceptionnelle...",
+buttonText: "Profiter de l'offre",
+availabilityText: "Offre limitée - 48h",
+titleColor: "#fd7e14",
+buttonColorStart: "#fd7e14",
+buttonColorEnd: "#ff6b35",
+enabled: true,
+maxDate: "2024-03-31",
+
+// Pour désactiver temporairement le pop-up :
+enabled: false,
+
+// Pour une campagne avec date limite :
+enabled: true,
+maxDate: "2024-02-14", // N'afficher que jusqu'au 14 février
+showOnce: true,
+-->
+
+</body>
+</html> 

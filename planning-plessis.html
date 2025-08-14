@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning - Studio Pléssis-Pâté - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .studio-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .studio-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .studio-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .studio-btn.active {
+            background: #95a5a6;
+            cursor: default;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            opacity: 0.5;
+        }
+
+        .studio-btn.active:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .reservation-section {
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .reservation-btn {
+            background: linear-gradient(135deg, #38767d 0%, #2c5f65 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 6px 20px rgba(56, 118, 125, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reservation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(56, 118, 125, 0.6);
+            background: linear-gradient(135deg, #2c5f65 0%, #38767d 100%);
+        }
+
+        .reservation-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .planning-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .day-header {
+            padding: 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: stripe 20s linear infinite;
+        }
+
+        @keyframes stripe {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .lundi { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); }
+        .mardi { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .mercredi { background: linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%); }
+        .jeudi { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .vendredi { background: linear-gradient(135deg, #ff8a80 0%, #ff80ab 100%); }
+        .samedi { background: linear-gradient(135deg, #ffd54f 0%, #ffb74d 100%); }
+        .dimanche { background: linear-gradient(135deg, #b39ddb 0%, #90caf9 100%); }
+
+        .day-content {
+            padding: 18px;
+        }
+
+        .course-item {
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .course-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .course-time {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .course-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .course-name {
+            color: #34495e;
+            font-weight: 500;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .alternating-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .alternating-badge::after {
+            content: '↻';
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.6rem;
+            color: white;
+        }
+
+        /* Couleurs des bordures par type de cours */
+        .pole { border-left-color: #e74c3c; }
+        .souplesse { border-left-color: #9b59b6; }
+        .cerceau { border-left-color: #3498db; }
+        .pilate { border-left-color: #2ecc71; }
+        .choree { border-left-color: #f39c12; }
+        .booty { border-left-color: #e67e22; }
+        .stronger { border-left-color: #34495e; }
+
+
+
+        @media (max-width: 768px) {
+            .planning-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .day-content {
+                padding: 15px;
+            }
+            
+            .course-item {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
+            
+            .studio-selector {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+            
+            .studio-btn {
+                padding: 8px 20px;
+                width: 90%;
+                max-width: 320px;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            .reservation-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+                width: 90%;
+                max-width: 300px;
+                white-space: nowrap;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .planning-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .planning-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+                 <div class="page-header">
+             <h1 class="page-title">Planning</h1>
+             <p class="page-subtitle">Planifiez vos cours avec nous</p>
+             <div class="studio-selector">
+                 <button class="studio-btn active" onclick="showStudio('plessis')">
+                     📍 Démon Spin - Le Plessis-Pâté 
+                 </button>
+                 <button class="studio-btn" onclick="showStudio('fargeau')">
+                     📍 Démon Spin 2 - Saint-Fargeau
+                 </button>
+             </div>
+         </div>
+
+                 <div class="planning-grid" id="planning-plessis">
+            <!-- Lundi -->
+            <div class="day-card">
+                <div class="day-header lundi">
+                    <h2>Lundi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">inter 1-2</div>
+                         </div>
+                     </div>
+                     <div class="course-item pole">
+                         <div class="course-time">20h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">débutant 2</div>
+                         </div>
+                     </div>
+                     <div class="course-item souplesse">
+                         <div class="course-time">20h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Souplesse</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Mardi -->
+            <div class="day-card">
+                <div class="day-header mardi">
+                    <h2>Mardi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">inter 1-2-3</div>
+                         </div>
+                     </div>
+                     <div class="course-item cerceau">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Cerceau aérien</div>
+                         </div>
+                     </div>
+                     <div class="course-item souplesse">
+                         <div class="course-time">20h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Souplesse</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Mercredi -->
+            <div class="day-card">
+                <div class="day-header mercredi">
+                    <h2>Mercredi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pilate">
+                         <div class="course-time">18h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pilate</div>
+                         </div>
+                     </div>
+                     <div class="course-item pilate">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pilate</div>
+                         </div>
+                     </div>
+                     <div class="course-item pole">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">initiation</div>
+                         </div>
+                     </div>
+                     <div class="course-item pole">
+                         <div class="course-time">20h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">inter 1</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Jeudi -->
+            <div class="day-card">
+                <div class="day-header jeudi">
+                    <h2>Jeudi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">12h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">tous niveaux</div>
+                         </div>
+                     </div>
+                     <div class="course-item pole">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance / Pôle Exotik</div>
+                             <div style="display: flex; flex-direction: column; gap: 3px;">
+                                 <div class="alternating-badge">1 sem. / 2 </div>
+                                 <div class="level-badge">tous niveaux</div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="course-item cerceau">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Cerceau aérien</div>
+                         </div>
+                     </div>
+                     <div class="course-item souplesse">
+                         <div class="course-time">20h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Souplesse</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Vendredi -->
+            <div class="day-card">
+                <div class="day-header vendredi">
+                    <h2>Vendredi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">19h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">débutant 1</div>
+                         </div>
+                     </div>
+                     <div class="course-item choree">
+                         <div class="course-time">20h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Pôle Chorée / Strap / FTP</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Samedi -->
+            <div class="day-card">
+                <div class="day-header samedi">
+                    <h2>Samedi</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">14h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">tous niveaux</div>
+                         </div>
+                     </div>
+                     <div class="course-item souplesse">
+                         <div class="course-time">15h45</div>
+                         <div class="course-content">
+                             <div class="course-name">Souplesse</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Dimanche -->
+            <div class="day-card">
+                <div class="day-header dimanche">
+                    <h2>Dimanche</h2>
+                </div>
+                <div class="day-content">
+                                         <div class="course-item pole">
+                         <div class="course-time">10h30</div>
+                         <div class="course-content">
+                             <div class="course-name">Pole dance</div>
+                             <div class="level-badge">débutant 1-2</div>
+                         </div>
+                     </div>
+                     <div class="course-item booty">
+                         <div class="course-time">14h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Booty Kat (1×/mois)</div>
+                         </div>
+                     </div>
+                     <div class="course-item stronger">
+                         <div class="course-time">14h00</div>
+                         <div class="course-content">
+                             <div class="course-name">Get Stronger (1×/mois)</div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Planning Saint-Fargeau (caché par défaut) -->
+        <div class="planning-grid" id="planning-fargeau" style="display: none;">
+            <!-- Lundi -->
+            <div class="day-card">
+                <div class="day-header lundi">
+                    <h2>Lundi</h2>
+                </div>
+                <div class="day-content">
+                    <div class="course-item pole">
+                        <div class="course-time">18h30</div>
+                        <div class="course-content">
+                            <div class="course-name">Pole dance</div>
+                            <div class="level-badge">débutant 1</div>
+                        </div>
+                    </div>
+                    <div class="course-item pole">
+                        <div class="course-time">20h00</div>
+                        <div class="course-content">
+                            <div class="course-name">Pole dance</div>
+                            <div class="level-badge">initiation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mardi -->
+            <div class="day-card">
+                <div class="day-header mardi">
+                    <h2>Mardi</h2>
+                </div>
+                <div class="day-content">
+                    <div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+                        Aucun cours programmé
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mercredi -->
+            <div class="day-card">
+                <div class="day-header mercredi">
+                    <h2>Mercredi</h2>
+                </div>
+                <div class="day-content">
+                    <div class="course-item pole">
+                        <div class="course-time">18h30</div>
+                        <div class="course-content">
+                            <div class="course-name">Pole dance</div>
+                            <div class="level-badge">débutant 1-2</div>
+                        </div>
+                    </div>
+                    <div class="course-item pole">
+                        <div class="course-time">20h00</div>
+                        <div class="course-content">
+                            <div class="course-name">Pole dance</div>
+                            <div class="level-badge">inter</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jeudi -->
+            <div class="day-card">
+                <div class="day-header jeudi">
+                    <h2>Jeudi</h2>
+                </div>
+                <div class="day-content">
+                    <div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+                        Aucun cours programmé
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendredi -->
+            <div class="day-card">
+                <div class="day-header vendredi">
+                    <h2>Vendredi</h2>
+                </div>
+                <div class="day-content">
+                    <div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+                        Aucun cours programmé
+                    </div>
+                </div>
+            </div>
+
+            <!-- Samedi -->
+            <div class="day-card">
+                <div class="day-header samedi">
+                    <h2>Samedi</h2>
+                </div>
+                <div class="day-content">
+                    <div class="course-item pole">
+                        <div class="course-time">10h30</div>
+                        <div class="course-content">
+                            <div class="course-name">Pole dance</div>
+                            <div class="level-badge">initiation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dimanche -->
+            <div class="day-card">
+                <div class="day-header dimanche">
+                    <h2>Dimanche</h2>
+                </div>
+                <div class="day-content">
+                    <div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+                        Aucun cours programmé
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Réservation -->
+        <div class="reservation-section">
+            <a href="/reservation" class="reservation-btn" target="_top">
+                🎪 Réserver un cours
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showStudio(studio) {
+            // Cacher tous les plannings
+            document.getElementById('planning-plessis').style.display = 'none';
+            document.getElementById('planning-fargeau').style.display = 'none';
+            
+            // Retirer la classe active de tous les boutons
+            document.querySelectorAll('.studio-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Afficher le planning sélectionné et activer le bouton correspondant
+            if (studio === 'plessis') {
+                document.getElementById('planning-plessis').style.display = 'grid';
+                event.target.classList.add('active');
+            } else if (studio === 'fargeau') {
+                document.getElementById('planning-fargeau').style.display = 'grid';
+                event.target.classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

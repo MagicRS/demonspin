@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Pole Dance Studio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #fff;
+      color: #111;
+      margin: 0; 
+      padding: 0;
+      line-height: 1.6;
+    }
+    
+    .main-card {
+      max-width: 600px;
+      margin: 40px auto 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.1);
+      padding: 0 0 38px 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1.5px solid #eee;
+    }
+    
+    .intro-img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      border-radius: 20px 20px 0 0;
+      background: #e8e3ec;
+    }
+    
+    .intro-title {
+      font-size: 2rem;
+      margin: 30px 0 7px 0;
+      font-weight: 700;
+      color: #111;
+    }
+    
+    .intro-desc {
+      font-size: 1.08rem;
+      color: #333;
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+    
+    .green-btn {
+      background: #38767d;
+      color: #fff;
+      font-size: 1.12rem;
+      border: none;
+      border-radius: 9px;
+      padding: 14px 36px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      margin-top: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      outline: none;
+      font-family: inherit;
+    }
+    
+    .green-btn:hover { 
+      background: #4a8b92; 
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .green-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .quiz-container {
+      width: 100%;
+      padding: 34px 28px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .back-button {
+      background: none;
+      border: none;
+      color: #38767d;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-bottom: 16px;
+      text-align: left;
+      font-family: inherit;
+      transition: color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .back-button:hover {
+      color: #4a8b92;
+    }
+    
+    .back-button:focus-visible {
+      outline: 2px solid #38767d;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    
+    .progress-bar-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 10px;
+      height: 18px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      background: #38767d;
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      text-align: right;
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.93rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 14px;
+    }
+    
+    .quiz-question {
+      font-size: 1.18rem;
+      margin-bottom: 24px;
+      font-weight: 600;
+      color: #111;
+    }
+    
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin-bottom: 28px;
+      margin-top: 12px;
+      align-items: stretch;
+    }
+    
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: #fff;
+      color: #111;
+      border: 1.8px solid #181818;
+      border-radius: 14px;
+      padding: 15px 18px;
+      font-size: 1.06rem;
+      font-weight: 500;
+      box-shadow: 0 3px 11px rgba(0,0,0,0.1);
+      user-select: none;
+      transition: all 0.15s ease;
+      position: relative;
+      outline: none;
+      font-family: inherit;
+    }
+    
+    .quiz-option:hover {
+      border-color: #38767d;
+      box-shadow: 0 4px 14px rgba(56, 118, 125, 0.2);
+    }
+    
+    .quiz-option.selected, .quiz-option:active {
+      border: 2.2px solid #38767d;
+      box-shadow: 0 4px 14px rgba(46, 113, 98, 0.3);
+    }
+    
+    .quiz-option .radio-dot {
+      height: 20px; 
+      width: 20px;
+      border: 2.3px solid #38767d;
+      border-radius: 50%;
+      background: #fff;
+      margin-right: 12px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s ease;
+      flex-shrink: 0;
+    }
+    
+    .quiz-option.selected .radio-dot {
+      border-color: #38767d;
+    }
+    
+    .quiz-option .radio-dot-inner {
+      display: none;
+      height: 10px;
+      width: 10px;
+      background: #38767d;
+      border-radius: 50%;
+    }
+    
+    .quiz-option.selected .radio-dot-inner {
+      display: block;
+    }
+    
+    /* Styles pour les checkboxes multiples */
+    .quiz-option.multiple .radio-dot {
+      border-radius: 4px;
+      border: 2.3px solid #38767d;
+    }
+    
+    .quiz-option.multiple.selected .radio-dot {
+      background: #38767d;
+    }
+    
+    .quiz-option.multiple .radio-dot-inner {
+      display: none;
+      width: 12px;
+      height: 8px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-right: none;
+      transform: rotate(-45deg);
+      margin-top: -2px;
+    }
+    
+    .quiz-option.multiple.selected .radio-dot-inner {
+      display: block;
+    }
+    
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+      width: 100%;
+    }
+    
+    .btn-row .green-btn {
+      margin-top: 0;
+    }
+    
+    .result-title {
+      font-size: 1.24rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #111;
+    }
+    
+    .result-desc {
+      font-size: 1.08rem;
+      color: #38767d;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .hide { 
+      display: none !important; 
+    }
+    
+    /* Responsive design */
+    @media (max-width: 480px) {
+      .main-card {
+        margin: 20px 10px 0 10px;
+        border-radius: 15px;
+        max-width: calc(100vw - 20px);
+      }
+      
+      .intro-img {
+        border-radius: 15px 15px 0 0;
+      }
+      
+      .intro-title {
+        font-size: 1.6rem;
+        margin: 20px 0 5px 0;
+      }
+      
+      .quiz-container {
+        padding: 24px 20px 20px 20px;
+      }
+      
+      .btn-row {
+        flex-direction: column;
+      }
+    }
+    
+    /* Focus styles pour l'accessibilité */
+    .quiz-option:focus-visible {
+      outline: 2px solid #38767d;
+      outline-offset: 2px;
+    }
+    
+    .green-btn:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <!-- Page d'accueil -->
+    <div id="introCard">
+      <img src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/pole-dance---ok-A0xjjXDROWSLe2Xl.png" 
+           class="intro-img" 
+           alt="Studio de pole dance avec barres et équipements" 
+           loading="lazy" />
+      <div class="intro-title">Trouve ton cours ou ta discipline idéale.</div>
+      <div class="intro-desc">
+        Un quiz rapide pour découvrir le cours de pole dance ou la pratique qui te correspond le mieux.
+      </div>
+      <button class="green-btn" id="startQuizBtn" type="button">Démarrer</button>
+    </div>
+
+    <!-- Quiz/arbre de décision -->
+    <div class="quiz-container hide" id="quizContainer">
+      <button class="back-button" type="button" id="prevBtn">← Précédent</button>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+      </div>
+      <div id="questionZone"></div>
+      <div class="btn-row">
+        <button class="green-btn" type="button" id="nextBtn">Question suivante</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // === BASE DE DONNÉES DES DISCIPLINES ===
+    
+    const disciplines = [
+      {
+        id: "pole_exotik",
+        nom: "Pole Exotik",
+        desc: "Danse sensuelle et technique, souvent en talons, pour explorer le flow et la féminité en musique.",
+        objectifs: ["etre_plus_sexy", "sexprimer_artistiquement", "danser"]
+      },
+      {
+        id: "pole_strap",
+        nom: "Pole Strap",
+        desc: "Discipline aérienne sur sangle, combine force, figures acrobatiques et challenge personnel.",
+        objectifs: ["renforcer_corps", "defi_personnel", "acrobaties"]
+      },
+      {
+        id: "cerceaux_aeriens",
+        nom: "Cerceaux aériens",
+        desc: "Acrobaties aériennes sur cerceau, grâce, force et sensations aériennes accessibles à tous niveaux.",
+        objectifs: ["acrobaties", "renforcer_corps", "defi_personnel"]
+      },
+      {
+        id: "souplesse",
+        nom: "Souplesse",
+        desc: "Travail de la mobilité, des écarts, du dos et des lignes ; complément idéal pour progresser en pole et éviter les blessures.",
+        objectifs: ["gagner_souplesse", "mobilite", "bien_etre"]
+      },
+      {
+        id: "pilates",
+        nom: "Pilates",
+        desc: "Renforcement profond, travail du centre, mobilité douce pour prendre soin de son corps et progresser sur la pole.",
+        objectifs: ["renforcer_corps", "mobilite", "bien_etre"]
+      },
+      {
+        id: "chorégraphie",
+        nom: "Chorégraphie",
+        desc: "Expression artistique, musicalité et plaisir de danser, à la barre ou au sol, ouvert à tous.",
+        objectifs: ["sexprimer_artistiquement", "danser", "bien_etre"]
+      },
+      {
+        id: "pole_dance",
+        nom: "Pole Dance",
+        desc: "Discipline complète combinant force, grâce, danse et acrobaties sur une barre verticale.",
+        objectifs: ["renforcer_corps", "acrobaties", "danser", "defi_personnel", "gagner_souplesse", "mobilite"]
+      }
+    ];
+
+    // === QUESTIONS ===
+    
+    const questions = [
+      {
+        text: "Que souhaites-tu faire aujourd'hui ?",
+        options: [
+          { label: "Trouver un cours de pole dance", type: "pole" },
+          { label: "Trouver ma discipline idéale", type: "autre" }
+        ]
+      }
+    ];
+
+    const niveauQuestions = [
+      {
+        text: "Quel est le mouvement le plus avancé que tu réalises confortablement ?",
+        options: [
+          { label: "Je débute / Moins de 1 mois", niveau: "Initiation" },
+          { label: "Inside Leg / Outside Leg / Superman / V", niveau: "Débutant 1" },
+          { label: "Aerial V / Combo / Pyramide / Butterfly extented", niveau: "Débutant 2" },
+          { label: "Twisted grip / Shoulder du sol avec elan / Ayesha / Reiko monté", niveau: "Intermédiaire 1" },
+          { label: "Twisted grip maîtrisé sans élan / Matrix / Aerial Shoulder / Machine Gun", niveau: "Intermédiaire 2" }
+        ]
+      }
+    ];
+
+    const objectifsQuestions = [
+      {
+        text: "Tes objectifs sont :",
+        multiple: true,
+        options: [
+          { label: "Renforcer mon corps", objectif: "renforcer_corps" },
+          { label: "Gagner en souplesse", objectif: "gagner_souplesse" },
+          { label: "M'exprimer artistiquement", objectif: "sexprimer_artistiquement" },
+          { label: "Être plus sexy", objectif: "etre_plus_sexy" },
+          { label: "Défier mes limites", objectif: "defi_personnel" },
+          { label: "Faire des acrobaties", objectif: "acrobaties" },
+          { label: "Danser et bouger", objectif: "danser" },
+          { label: "Améliorer ma mobilité", objectif: "mobilite" },
+          { label: "Prendre soin de mon bien-être", objectif: "bien_etre" }
+        ]
+      }
+    ];
+
+    // === ÉTAT GLOBAL ===
+    let quizState = {
+      answers: [],
+      selectedObjectifs: [],
+      branch: null,
+      currentStep: 0,
+      totalSteps: 2
+    };
+
+    // === ÉLÉMENTS DOM ===
+    const elements = {
+      introCard: null,
+      quizContainer: null,
+      questionZone: null,
+      prevBtn: null,
+      nextBtn: null,
+      progressBar: null,
+      startQuizBtn: null
+    };
+
+    // === FONCTIONS UTILITAIRES ===
+    
+    function safeGetElement(id) {
+      const element = document.getElementById(id);
+      if (!element) {
+        console.error(`Élément avec l'ID "${id}" non trouvé`);
+        return null;
+      }
+      return element;
+    }
+
+    function initializeElements() {
+      elements.introCard = safeGetElement('introCard');
+      elements.quizContainer = safeGetElement('quizContainer');
+      elements.questionZone = safeGetElement('questionZone');
+      elements.prevBtn = safeGetElement('prevBtn');
+      elements.nextBtn = safeGetElement('nextBtn');
+      elements.progressBar = safeGetElement('progressBar');
+      elements.startQuizBtn = safeGetElement('startQuizBtn');
+      
+      const missingElements = Object.entries(elements)
+        .filter(([key, element]) => !element)
+        .map(([key]) => key);
+      
+      if (missingElements.length > 0) {
+        console.error('Éléments manquants:', missingElements);
+        return false;
+      }
+      
+      return true;
+    }
+
+    function resetQuizState() {
+      quizState = {
+        answers: [],
+        selectedObjectifs: [],
+        branch: null,
+        currentStep: 0,
+        totalSteps: 2
+      };
+    }
+
+    function getTotalSteps() {
+      if (quizState.branch === "pole") return 2;
+      if (quizState.branch === "autre") return 2;
+      return 2;
+    }
+
+    function updateProgress(step, total) {
+      if (!elements.progressBar) return;
+      
+      let percent = Math.round((step - 1) / (total - 1) * 100);
+      if (total <= 1) percent = 100;
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+      
+      // Ne pas atteindre 100% avant la dernière étape
+      if (step < total) {
+        percent = Math.min(percent, 99);
+      }
+      
+      elements.progressBar.style.width = percent + "%";
+      elements.progressBar.innerText = percent + "%";
+      elements.progressBar.setAttribute('aria-valuenow', percent);
+    }
+
+    function updateButtonStates() {
+      if (!elements.prevBtn || !elements.nextBtn) return;
+      
+      // Bouton précédent - visible sauf sur la première question
+      elements.prevBtn.style.display = quizState.currentStep === 0 ? "none" : "flex";
+      
+      // Bouton suivant
+      let canProceed = false;
+      if (quizState.currentStep === 0) {
+        canProceed = quizState.answers[0] !== undefined;
+      } else if (quizState.branch === "pole") {
+        canProceed = quizState.answers[1] !== undefined;
+      } else if (quizState.branch === "autre") {
+        canProceed = quizState.selectedObjectifs.length > 0;
+      }
+      
+      elements.nextBtn.disabled = !canProceed;
+      elements.nextBtn.style.display = "inline-block";
+      
+      // Texte du bouton suivant
+      if (quizState.currentStep === 0) {
+        elements.nextBtn.innerText = "Question suivante";
+      } else if (quizState.branch === "pole") {
+        elements.nextBtn.innerText = "Voir mon niveau";
+      } else if (quizState.branch === "autre") {
+        elements.nextBtn.innerText = "Découvrir ma discipline";
+      }
+    }
+
+    // === ALGORITHME DE SÉLECTION DE DISCIPLINE ===
+    
+    function findBestDiscipline(selectedObjectifs) {
+      if (selectedObjectifs.length === 0) return null;
+      
+      // Calculer le score pour chaque discipline
+      const scores = disciplines.map(discipline => {
+        let score = 0;
+        selectedObjectifs.forEach(objectif => {
+          if (discipline.objectifs.includes(objectif)) {
+            score += 1;
+          }
+        });
+        return {
+          discipline: discipline,
+          score: score,
+          percentage: (score / selectedObjectifs.length) * 100
+        };
+      });
+      
+      // Trier par score décroissant
+      scores.sort((a, b) => b.score - a.score);
+      
+      // Retourner la discipline avec le meilleur score
+      return scores[0];
+    }
+
+    // === RENDU DES QUESTIONS ===
+    
+    function renderQuestion(question, questionIndex) {
+      if (!elements.questionZone || !question) return;
+      
+      let html = `<div class="quiz-question">${escapeHtml(question.text)}</div><div class="quiz-options">`;
+      
+      question.options.forEach((option, index) => {
+        let selected = "";
+        if (question.multiple) {
+          // Pour les questions multiples, vérifier si l'objectif est sélectionné
+          selected = quizState.selectedObjectifs.includes(option.objectif) ? "selected" : "";
+        } else {
+          // Pour les questions simples, vérifier la réponse
+          selected = quizState.answers[questionIndex] === index ? "selected" : "";
+        }
+        
+        const optionClass = question.multiple ? "quiz-option multiple" : "quiz-option";
+        
+        html += `
+          <div class="${optionClass} ${selected}" 
+               data-idx="${index}" 
+               data-objectif="${option.objectif || ''}"
+               tabindex="0" 
+               role="${question.multiple ? 'checkbox' : 'radio'}" 
+               aria-checked="${selected ? 'true' : 'false'}"
+               onkeydown="handleOptionKeydown(event, ${questionIndex}, ${index})">
+            <span class="radio-dot"><span class="radio-dot-inner"></span></span>
+            <span>${escapeHtml(option.label)}</span>
+          </div>`;
+      });
+      
+      html += '</div>';
+      elements.questionZone.innerHTML = html;
+
+      // Ajouter les événements de clic
+      document.querySelectorAll('.quiz-option').forEach(optionEl => {
+        optionEl.addEventListener('click', function() {
+          if (question.multiple) {
+            handleMultipleOptionClick(questionIndex, parseInt(this.getAttribute('data-idx')));
+          } else {
+            handleOptionClick(questionIndex, parseInt(this.getAttribute('data-idx')));
+          }
+        });
+      });
+    }
+
+    function handleOptionClick(questionIndex, optionIndex) {
+      quizState.answers[questionIndex] = optionIndex;
+      
+      // Définir la branche si c'est la première question
+      if (questionIndex === 0 && questions[0] && questions[0].options[optionIndex]) {
+        quizState.branch = questions[0].options[optionIndex].type;
+        quizState.totalSteps = getTotalSteps();
+      }
+      
+      renderCurrentStep();
+      
+      // Passage automatique à la question suivante après un délai
+      setTimeout(() => {
+        if (questionIndex + 1 < quizState.totalSteps) {
+          nextQuestion();
+        }
+      }, 240);
+    }
+
+    function handleMultipleOptionClick(questionIndex, optionIndex) {
+      const question = objectifsQuestions[0];
+      const option = question.options[optionIndex];
+      
+      if (quizState.selectedObjectifs.includes(option.objectif)) {
+        // Désélectionner
+        quizState.selectedObjectifs = quizState.selectedObjectifs.filter(obj => obj !== option.objectif);
+      } else {
+        // Sélectionner
+        quizState.selectedObjectifs.push(option.objectif);
+      }
+      
+      renderCurrentStep();
+      updateButtonStates();
+    }
+
+    function handleOptionKeydown(event, questionIndex, optionIndex) {
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        const question = quizState.branch === "autre" ? objectifsQuestions[0] : questions[questionIndex];
+        if (question && question.multiple) {
+          handleMultipleOptionClick(questionIndex, optionIndex);
+        } else {
+          handleOptionClick(questionIndex, optionIndex);
+        }
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // === NAVIGATION ===
+    
+    function renderCurrentStep() {
+      if (quizState.currentStep === 0) {
+        // Question de choix de branche
+        renderQuestion(questions[0], 0);
+        updateProgress(1, 3);
+      } else if (quizState.branch === "pole") {
+        // Question de niveau pole dance
+        renderQuestion(niveauQuestions[0], 1);
+        updateProgress(2, 3);
+      } else if (quizState.branch === "autre") {
+        // Question d'objectifs multiples
+        renderQuestion(objectifsQuestions[0], 1);
+        updateProgress(2, 3);
+      }
+      
+      updateButtonStates();
+    }
+
+    function nextQuestion() {
+      if (quizState.currentStep === 1) {
+        // Si on est à la deuxième question, afficher le résultat
+        renderResult();
+        return;
+      }
+      quizState.currentStep++;
+      renderCurrentStep();
+    }
+
+    function prevQuestion() {
+      if (quizState.currentStep === 0) return;
+      quizState.currentStep--;
+      renderCurrentStep();
+    }
+
+    // === RENDU DES RÉSULTATS ===
+    
+    function renderResult() {
+      if (!elements.questionZone || !elements.nextBtn) return;
+      
+      elements.nextBtn.style.display = "none";
+      elements.prevBtn.style.display = "flex";
+      elements.prevBtn.onclick = function() {
+        // Retourner à la dernière question au lieu du début
+        quizState.currentStep = 1;
+        renderCurrentStep();
+        // Remettre l'événement normal
+        elements.prevBtn.onclick = prevQuestion;
+      };
+      
+      let html = '';
+      
+      try {
+        if (quizState.branch === "pole") {
+          const niveauIndex = quizState.answers[1];
+          if (niveauIndex !== undefined && niveauQuestions[0] && niveauQuestions[0].options[niveauIndex]) {
+            const niveau = niveauQuestions[0].options[niveauIndex].niveau;
+            const message = getNiveauMessage(niveau);
+            
+            html = `
+              <div class="result-title">Ton niveau : ${escapeHtml(niveau)}</div>
+              <div class="result-desc">${escapeHtml(message)}</div>
+              <div style="font-size: 0.95rem; color: #666; margin: 16px 0 8px 0; line-height: 1.4; font-style: italic;">
+                💡 Premier cours au studio ? Pas d'inquiétude, notre équipe saura t'orienter vers le niveau parfait pour toi.
+              </div>
+              <button class="green-btn" style="margin-top:18px;" type="button" onclick="handleReservation()" target="_top">Réserver un cours</button>
+            `;
+          }
+        } else if (quizState.branch === "autre") {
+          const bestMatch = findBestDiscipline(quizState.selectedObjectifs);
+          if (bestMatch && bestMatch.score > 0) {
+            const objectifsSelectionnes = quizState.selectedObjectifs.length;
+            const correspondance = Math.round(bestMatch.percentage);
+            
+            html = `
+              <div class="result-title">${escapeHtml(bestMatch.discipline.nom)}</div>
+              <div class="result-desc">
+                ${escapeHtml(bestMatch.discipline.desc)}
+                <br><br>
+                <strong>Correspondance : ${correspondance}%</strong> 
+                (${bestMatch.score}/${objectifsSelectionnes} objectifs correspondants)
+              </div>
+              <button class="green-btn" style="margin-top:16px;" type="button" onclick="handleContact('${bestMatch.discipline.id}')">En savoir plus</button>
+            `;
+          } else {
+            html = `
+              <div class="result-title">Pole Dance</div>
+              <div class="result-desc">
+                La pole dance est une discipline complète qui peut répondre à tous tes objectifs !
+                Elle combine force, grâce, danse et acrobaties.
+              </div>
+              <button class="green-btn" style="margin-top:16px;" type="button" onclick="handleContact('pole_dance')">En savoir plus</button>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors du rendu du résultat:', error);
+        html = `
+          <div class="result-title">Erreur</div>
+          <div class="result-desc">Une erreur s'est produite. Veuillez réessayer.</div>
+          <button class="green-btn" style="margin-top:16px;" type="button" onclick="restartQuiz()">Recommencer</button>
+        `;
+      }
+      
+      elements.questionZone.innerHTML = html;
+      updateProgress(3, 3);
+    }
+
+    function getNiveauMessage(niveau) {
+      const messages = {
+        "Initiation": "Commence par 4-5 cours d'initiation avant de passer au niveau suivant !",
+        "Débutant 1": "Continue à découvrir la pole dance, tu es en début de progression !",
+        "Débutant 2": "Tu as déjà quelques bases, tu vas progresser de plus en plus vite.",
+        "Intermédiaire 1": "Prêt·e à te challenger avec des figures plus avancées !",
+        "Intermédiaire 2": "Prêt·e à te challenger avec des figures plus avancées !"
+      };
+      return messages[niveau] || "Parfait pour ton niveau !";
+    }
+
+    // === GESTION DES ÉVÉNEMENTS ===
+    
+    function startQuiz() {
+      if (!elements.introCard || !elements.quizContainer) return;
+      
+      elements.introCard.classList.add('hide');
+      elements.quizContainer.classList.remove('hide');
+      resetQuizState();
+      renderCurrentStep();
+    }
+
+    function restartQuiz() {
+      resetQuizState();
+      elements.introCard.classList.remove('hide');
+      elements.quizContainer.classList.add('hide');
+      elements.nextBtn.style.display = "inline-block";
+    }
+
+    function handleReservation() {
+      window.top.location.href = '/reservation';
+    }
+
+    function handleContact(disciplineId) {
+      // Mapping des IDs de disciplines vers les ancres de la page cours-detailles
+      const disciplineAnchors = {
+        'pole_exotik': 'exotik',
+        'pole_strap': 'polestrap', 
+        'cerceaux_aeriens': 'cerceau',
+        'souplesse': 'souplesse',
+        'pilates': 'pilates',
+        'chorégraphie': 'choree',
+        'pole_dance': 'poledance'
+      };
+      
+      const anchor = disciplineAnchors[disciplineId] || 'poledance';
+      window.top.location.href = `/disciplines#${anchor}`;
+    }
+
+    // === INITIALISATION ===
+    
+    function initializeEventListeners() {
+      if (elements.startQuizBtn) {
+        elements.startQuizBtn.addEventListener('click', startQuiz);
+      }
+      
+      if (elements.nextBtn) {
+        elements.nextBtn.addEventListener('click', nextQuestion);
+      }
+      
+      if (elements.prevBtn) {
+        elements.prevBtn.addEventListener('click', prevQuestion);
+      }
+    }
+
+    function init() {
+      if (!initializeElements()) {
+        console.error('Impossible d\'initialiser l\'application');
+        return;
+      }
+      
+      initializeEventListeners();
+      resetQuizState();
+    }
+
+    // Démarrer l'application quand le DOM est prêt
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // Gestion des erreurs globales
+    window.addEventListener('error', function(event) {
+      console.error('Erreur JavaScript:', event.error);
+    });
+
+  </script>
+</body>
+</html> 

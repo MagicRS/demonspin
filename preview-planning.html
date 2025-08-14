@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning & Réservation - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: transparent;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #38767d 0%, #2d5a61 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .widget-container {
+            padding: 20px 30px 40px 30px;
+            min-height: 600px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38767d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #38767d;
+        }
+
+        .info-section h3 {
+            color: #38767d;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-section h2 {
+            color: #38767d;
+            margin-bottom: 5px;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-section li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-section li::before {
+            content: "📅";
+            position: absolute;
+            left: 0;
+            font-size: 1rem;
+        }
+
+        .quiz-button {
+            background: linear-gradient(135deg, #38767d 0%, #2d5a61 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(56, 118, 125, 0.3);
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: shimmer 4s ease-in-out infinite;
+            flex: 1;
+        }
+
+        @keyframes shimmer {
+            0%, 90%, 100% {
+                box-shadow: 0 4px 12px rgba(56, 118, 125, 0.3);
+            }
+            95% {
+                box-shadow: 0 4px 12px rgba(56, 118, 125, 0.3), 
+                           0 0 20px rgba(255, 255, 255, 0.4),
+                           inset 0 0 20px rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 100%;
+            height: calc(100% + 4px);
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: shine 6s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0%, 85%, 100% {
+                left: -100%;
+                opacity: 0;
+            }
+            90%, 95% {
+                left: 100%;
+                opacity: 1;
+            }
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(56, 118, 125, 0.4);
+            background: linear-gradient(135deg, #4a8b92 0%, #38767d 100%);
+        }
+
+        .quiz-button:active {
+            transform: translateY(0);
+        }
+
+        .quiz-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .quiz-text-mobile {
+            display: none;
+        }
+
+        .quiz-text-desktop {
+            display: inline;
+        }
+
+        .disclaimer-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #f39c12;
+            border-radius: 12px;
+            padding: 20px 20px 12px 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .disclaimer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #e67e22;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .disclaimer-icon {
+            font-size: 1.4rem;
+            margin-right: 10px;
+        }
+
+        .disclaimer-content {
+            color: #8b4513;
+            font-weight: 600;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        .important-highlight {
+            background: #e67e22;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .planning-button {
+            background: linear-gradient(135deg, #38767d 0%, #2d5a61 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(56, 118, 125, 0.3);
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .planning-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(56, 118, 125, 0.4);
+            background: linear-gradient(135deg, #4a8b92 0%, #38767d 100%);
+        }
+
+        .planning-button:active {
+            transform: translateY(0);
+        }
+
+        .planning-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Gestion du texte desktop/mobile pour le bouton quiz */
+        .quiz-text-mobile {
+            display: none;
+        }
+
+        .quiz-text-desktop {
+            display: inline;
+        }
+
+        /* Style unifié pour le titre de réservation */
+        .info-title {
+            display: block;
+            text-align: center;
+            color: #38767d;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            white-space: nowrap;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 90%, 100% {
+                transform: scale(1);
+            }
+            95% {
+                transform: scale(1.05);
+            }
+        }
+
+        .wrong-choice {
+            color: #c0392b;
+            text-decoration: line-through;
+            font-weight: 400;
+        }
+
+        .right-choice {
+            color: #27ae60;
+            font-weight: 700;
+            background: rgba(39, 174, 96, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+
+
+        /* Gestion des widgets selon la taille d'écran */
+        .mobile-widget {
+            display: none;
+        }
+
+        .desktop-widget {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                width: 100vw;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .mobile-widget {
+                display: block;
+            }
+
+            .desktop-widget {
+                display: none;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .header {
+                padding: 15px 10px;
+            }
+
+            .widget-container {
+                padding: 12px 5px 5px 5px;
+            }
+
+            .info-section {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            #bsport-widget-834052,
+            #bsport-widget-628184 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #bsport-widget-834052 .calendar,
+            #bsport-widget-834052 .planning-item,
+            #bsport-widget-834052 .session-card,
+            #bsport-widget-834052 .day-column,
+            #bsport-widget-628184 .calendar,
+            #bsport-widget-628184 .planning-item,
+            #bsport-widget-628184 .session-card,
+            #bsport-widget-628184 .day-column {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            #bsport-widget-834052 button,
+            #bsport-widget-834052 .btn,
+            #bsport-widget-834052 .booking-button,
+            #bsport-widget-834052 .reserve-btn,
+            #bsport-widget-834052 svg,
+            #bsport-widget-834052 .icon,
+            #bsport-widget-628184 button,
+            #bsport-widget-628184 .btn,
+            #bsport-widget-628184 .booking-button,
+            #bsport-widget-628184 .reserve-btn,
+            #bsport-widget-628184 svg,
+            #bsport-widget-628184 .icon {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            .quiz-button {
+                font-size: 1rem;
+                padding: 14px 20px;
+                margin-bottom: 15px;
+            }
+
+            .quiz-icon {
+                font-size: 1.1rem;
+            }
+
+            .disclaimer-box {
+                padding: 16px 16px 10px 16px;
+                margin-bottom: 15px;
+            }
+
+            .disclaimer-header {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            .disclaimer-icon {
+                font-size: 1.2rem;
+                margin-right: 8px;
+            }
+
+            .disclaimer-content {
+                font-size: 0.95rem;
+                line-height: 1;
+            }
+
+            .important-highlight {
+                padding: 2px 6px;
+                font-size: 0.9rem;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .quiz-button, .planning-button {
+                font-size: 1rem;
+                padding: 10px 10px;
+                margin: 0;
+            }
+
+            .planning-icon {
+                font-size: 1.1rem;
+            }
+
+            /* Affichage du texte sur deux lignes pour mobile */
+            .quiz-text-desktop {
+                display: none;
+            }
+
+            .quiz-text-mobile {
+                display: inline;
+                line-height: 1.3;
+            }
+
+            /* Ajustement du titre pour mobile */
+            .info-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Planning & Réservation</h1>
+            <p>Consultez les créneaux disponibles et réservez votre cours</p>
+        </div>
+
+        <div class="widget-container">
+            <div class="buttons-container">
+                <a href="/trouver-un-cours" class="quiz-button" target="_top">
+                    <span class="quiz-icon">🎯</span>
+                    <span class="quiz-text">
+                        <span class="quiz-text-desktop">Trouver ma discipline ou mon niveau idéal</span>
+                        <span class="quiz-text-mobile">Trouver ma discipline<br>ou mon niveau idéal</span>
+                    </span>
+                </a>
+                <a href="/planning" class="planning-button" target="_top">
+                    <span class="planning-icon">📅</span>
+                    Planning complet
+                </a>
+            </div>
+            
+            <div class="disclaimer-box">
+                <div class="disclaimer-header">
+                    <span class="disclaimer-icon">⚠️</span>
+                    ATTENTION - Premier cours de Pole Dance ?
+                </div>
+                <div class="disclaimer-content">
+                    Choisissez <span class="important-highlight">INITIATION</span>, pas <span class="wrong-choice">Débutant 1</span> !<br><br>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="info-section">
+                <h3 class="info-title">👇 Réservation ci-dessous 👇</h3>
+                <ul>
+                    <li> Annulation gratuite jusqu'à 24h avant</li>
+                    <li> Cours limités en nombre de places</li>
+                    <li> Des questions ? <a href="https://demonspin.fr/faq" target="_top" style="color: #38767d; text-decoration: underline; font-weight: 600;">Consulte notre FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Widget Bsport Planning Desktop -->
+            <div id="bsport-widget-834052" class="desktop-widget">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Chargement du planning...</p>
+                </div>
+            </div>
+
+            <!-- Widget Bsport Planning Mobile -->
+            <div id="bsport-widget-628184" class="mobile-widget">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Chargement du planning...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bsport -->
+    <script id="insert-bsport-widget-cdn">
+        !function (b, s, p, o, r, t) { 
+            !typeof window.BsportWidget !== "undefined" && !document.getElementById("bsport-widget-cdn") && !function () { 
+                m = b.createElement(s), m.id = "bsport-widget-cdn", m.src = p, b.getElementsByTagName("head")[0].appendChild(m) 
+            }() 
+        }(document, "script", "https://cdn.bsport.io/scripts/widget.js")
+    </script>
+
+    <script id="bsport-widget-mount">
+        function MountBsportWidget(config, repeat=1) {
+            if (repeat > 50) { return }
+            if (!window.BsportWidget) {
+                return setTimeout(() => {
+                    MountBsportWidget(config,repeat+1)
+                }, 100 * repeat || 1)
+            }
+            
+            // Masquer le loading du widget spécifique une fois chargé
+            const parentElement = document.getElementById(config.parentElement);
+            if (parentElement) {
+                const loadingEl = parentElement.querySelector('.loading');
+                if (loadingEl) {
+                    loadingEl.style.display = 'none';
+                }
+            }
+            
+            BsportWidget.mount(config)
+        }
+    </script>
+
+    <script>
+        // Montage simple des widgets Bsport
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration pour le widget desktop
+            MountBsportWidget({
+                "parentElement": "bsport-widget-834052",
+                "companyId": 553,
+                "franchiseId": null,
+                "dialogMode": 1,
+                "widgetType": "calendar", 
+                "showFab": false,
+                "fullScreenPopup": false,
+                "styles": undefined,
+                "config": {
+                    "calendar": {
+                        "groupSessionByPeriod": false,
+                        "variant": "activityName",
+                        "todayOnly": false,
+                        "compactMode": false
+                    }
+                }  
+            });
+
+            // Configuration pour le widget mobile
+            MountBsportWidget({
+                "parentElement": "bsport-widget-628184",
+                "companyId": 553,
+                "franchiseId": null,
+                "dialogMode": 1,
+                "widgetType": "calendar", 
+                "showFab": false,
+                "fullScreenPopup": false,
+                "styles": undefined,
+                "config": {
+                    "calendar": {}
+                }  
+            });
+
+            // Masquer les spinners après chargement
+            setTimeout(() => {
+                const desktopWidget = document.getElementById('bsport-widget-834052');
+                const mobileWidget = document.getElementById('bsport-widget-628184');
+                
+                if (desktopWidget) {
+                    const loadingDiv = desktopWidget.querySelector('.loading');
+                    if (loadingDiv) loadingDiv.style.display = 'none';
+                }
+                
+                if (mobileWidget) {
+                    const loadingDiv = mobileWidget.querySelector('.loading');
+                    if (loadingDiv) loadingDiv.style.display = 'none';
+                }
+            }, 3000);
+        });
+    </script>
+
+
+</body>
+</html> 

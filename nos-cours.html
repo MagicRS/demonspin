@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Cours - Demon Spin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: transparent;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .course-image.pole-dance {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-poledance-YleQog2gWVu0brZv.jpg");
+        }
+
+        .course-image.cerceau-aerien {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-cerceau-aerien-dJobzQegDBs26xKy.png");
+        }
+
+        .course-image.souplesse {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/test_souplesse-dOqDglEyo6holaDj.png");
+        }
+
+        .course-image.exotik {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/exotik-cours-Awv93Q3X6lUyOrjZ.png");
+        }
+
+        .course-image.pole-strap {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-pole-strap-AE0rjQ2gJzI9bP7M.png");
+        }
+
+        .course-image.choree {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-choregraphie-mp8Jlg3g4nIvKK6l.jpg");
+        }
+
+        .course-image.pilate {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-pilate-91-m5KnZr3WMxI65Xy2.jpg");
+        }
+
+        .course-image.bootykat {
+            background-image: url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-twerk-91-A3Q7DlXrGBSR6vvK.png");
+        }
+
+        .course-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #666;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .course-content {
+            padding: 15px;
+        }
+
+        .course-description {
+            color: #333;
+            line-height: 1.5;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        /* Deuxième ligne avec 4 cartes */
+        .courses-grid-second {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .courses-grid,
+            .courses-grid-second {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .courses-grid,
+            .courses-grid-second {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .courses-grid,
+            .courses-grid-second {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Première ligne : 4 cartes -->
+        <div class="courses-grid">
+            <a href="https://demonspin.fr/disciplines#poledance" class="course-card" target="_top">
+                <div class="course-image pole-dance">
+                    <div class="course-title">POLE DANCE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Une discipline artistique et sportive mêlant force, élégance et créativité autour d'une barre</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#cerceau" class="course-card" target="_top">
+                <div class="course-image cerceau-aerien">
+                    <div class="course-title">CERCEAU AÉRIEN</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Mélange de danse et d'acrobaties aériennes suspendues dans un cerceau. Explores ta grâce et puissance en apesanteur.</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#souplesse" class="course-card" target="_top">
+                <div class="course-image souplesse">
+                    <div class="course-title">SOUPLESSE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Un entraînement ciblé pour gagner en mobilité, étirer le corps en profondeur et améliorer ses lignes en toute sécurité.</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#exotik" class="course-card" target="_top">
+                <div class="course-image exotik">
+                    <div class="course-title">EXOTIK</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Une version sensuelle et technique de la pole, pratiquée ou non en talons, qui célèbre la féminité, l'expression de soi et le flow au sol.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Deuxième ligne : 4 cartes -->
+        <div class="courses-grid-second">
+            <a href="https://demonspin.fr/disciplines#polestrap" class="course-card" target="_top">
+                <div class="course-image pole-strap">
+                    <div class="course-title">POLE STRAP</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">La Pole Strap renforce le haut du corps et offre une nouvelle sensation de spin, entre puissance et contrôle.</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#choree" class="course-card" target="_top">
+                <div class="course-image choree">
+                    <div class="course-title">CHORÉE</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Cours de chorégraphie autour de la barre mêlant danse, fluidité et expression. Parfait pour explorer ta musicalité en Pole.</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#pilates" class="course-card" target="_top">
+                <div class="course-image pilate">
+                    <div class="course-title">PILATE</div>
+                    <div class="new-badge">NOUVEAU!</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Cours de Pilates axés sur la respiration, la posture et le renforcement en profondeur. Idéal pour améliorer souplesse et stabilité.</p>
+                </div>
+            </a>
+
+            <a href="https://demonspin.fr/disciplines#bootykat" class="course-card" target="_top">
+                <div class="course-image bootykat">
+                    <div class="course-title">BOOTYKAT</div>
+                </div>
+                <div class="course-content">
+                    <p class="course-description">Cours de twerk et booty dance alliant isolations du bassin, shakes et chorégraphies rythmées. Cardio ludique et attitude féline !</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

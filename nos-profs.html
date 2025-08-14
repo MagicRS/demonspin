@@ -1,0 +1,331 @@
+<style>
+    .team-section {
+      padding: 2rem 1rem 3rem;
+      background: #fdfdfd;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .team-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      padding: 1rem 0.8rem 1rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      height: 100%;
+      min-height: 300px;
+      justify-content: space-between;
+    }
+    
+    /* Container pour les photos avec effet flip */
+    .team-photo-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 0.25rem auto; /* Centrer le conteneur */
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    
+    .team-photo-flip {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      transform-origin: center center; /* Axe de rotation au centre */
+    }
+    
+    .team-photo-container.flipped .team-photo-flip {
+      transform: rotateY(180deg);
+    }
+    
+    .team-photo, .team-photo-2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform-origin: center center; /* Axe de rotation au centre pour chaque image */
+    }
+    
+    .team-photo-2 {
+      transform: rotateY(180deg);
+    }
+    
+    .team-badge {
+      background-color: #033a41;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      margin-bottom: 0rem;
+      display: inline-block;
+    }
+    .team-quote {
+      font-style: italic;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 0rem;
+      margin-top: 0rem;
+    }
+    .team-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-top: 0.5rem;
+    }
+    .slider-arrows,
+    .slider-controls {
+      display: none;
+    }
+    @media (max-width: 1024px) {
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur tablette */
+        gap: 1.2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #slider {
+        padding-bottom: 2rem;
+      }
+      .team-grid {
+        display: flex;
+        overflow: hidden;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        gap: 1rem;
+      }
+      .team-card {
+        min-width: 85%;
+        scroll-snap-align: start;
+        min-height: 440px;
+        padding: 2rem;
+      }
+      
+      .team-photo-container {
+        width: 140px;
+        height: 140px;
+      }
+      
+      /* Sur mobile, utiliser le clic au lieu du hover */
+      .team-photo-container {
+        cursor: pointer;
+      }
+      
+      .slider-arrows {
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem auto 0;
+        width: 90%;
+      }
+      .slider-arrows button {
+        background: #033a41;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .slider-controls {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .slider-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #ccc;
+        cursor: pointer;
+      }
+      .slider-dot.active {
+        background-color: #033a41;
+      }
+    }
+    
+    /* Effet hover pour desktop */
+    @media (min-width: 769px) {
+      .team-photo-container:hover .team-photo-flip {
+        transform: rotateY(180deg);
+      }
+    }
+  </style>
+  
+  <div class="team-section">
+    <div class="team-grid" id="slider">
+      <!-- Prof 1 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-pole-dance---vini-2-dJobgeZlZJSJN316.png" alt="Photo Vini">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_vini-A85V8Q21y2S0ozXw.jpg" alt="Photo Vini 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole, Souplesse, Strap & Chorée</div>
+        <p class="team-quote">"On rigole mais surtout on se la donne !"</p>
+        <div class="team-name">Vini</div>
+      </div>
+      <!-- Prof 2 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-pole-dance---melina---ok-YX4xVw992MiZPoxw.png" alt="Photo Mel">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_mel-m5KnE1vGlMSVVVrN.jpg" alt="Photo Mel 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole dance</div>
+        <p class="team-quote">"Passionnée depuis 10 ans, je t'embarque dans des cours de pole fun, artistiques et sans pression."</p>
+        <div class="team-name">Mel</div>
+      </div>
+      <!-- Prof 3 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-pole-damien---2-AGBbQ39LvZfE2wEZ.png" alt="Photo Damien">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_damien2-A1a5qQeRG0t35lXZ.png" alt="Photo Damien 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole dance</div>
+        <p class="team-quote">"Lève les yeux, prends ton envol, la pole dance est ton nouveau terrain de jeu."</p>
+        <div class="team-name">Damien</div>
+      </div>
+      <!-- Prof 4 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-pole-virginia-2-A1a5qQj4o5i60eow.png" alt="Photo Virginia">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_virginia-YD0wQD5rl9i9kyk6.jpg" alt="Photo Virginia 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole, Souplesse & Exotik</div>
+        <p class="team-quote">"Viens exprimer ta sensualité avec confiance et puissance."</p>
+        <div class="team-name">Pimousse</div>
+      </div>
+      <!-- Prof 5 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-cerceau-aerien---gaelle---ok-mjEGbkDDPoF1ZLe0.png" alt="Photo Gaelle">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_gaelle_2-Awv9aR41qRTevEez.png" alt="Photo Gaelle 2">
+          </div>
+        </div>
+        <div class="team-badge">Cerceau aérien</div>
+        <p class="team-quote">"Il n'y a pas de bonne ou de mauvaise situation !"</p>
+        <div class="team-name">Gaelle</div>
+      </div>
+
+      <!-- Prof 7 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-pole-dance---anne-mv0JwlDDnGSZPlna.png" alt="Photo Anne">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_anne2-mp8Jw7W7JDfVPNGq.png" alt="Photo Anne 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole & Chorée</div>
+        <p class="team-quote">"La pole m'a permis de découvrir ma force intérieure. Je t'aide à faire pareil."</p>
+        <div class="team-name">Anne</div>
+      </div>
+      <!-- Prof 8 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-pole-dance---margot-A3Q7jvQpDlix00D0.png" alt="Photo Margot">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_margot2-AMq8ZzJoWps1q9lM.png" alt="Photo Margot 2">
+          </div>
+        </div>
+        <div class="team-badge">Pole dance</div>
+        <p class="team-quote">"La pole dance m'a aidée a passer de chenille à papillon, alors viens t'envoler avec nous !"</p>
+        <div class="team-name">Margot</div>
+      </div>
+      <!-- Prof 9 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-pilate---brunelle-Yyv01e2XkKF3x4N4.jpg" alt="Photo Brunelle">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/tmp_gaelle-YNq2WzNOXJHWZOkl.jpg" alt="Photo Brunelle 2">
+          </div>
+        </div>
+        <div class="team-badge">Pilate</div>
+        <p class="team-quote">"Trouve ton équilibre et renforce-toi en douceur avec le pilate !"</p>
+        <div class="team-name">Brunelle</div>
+      </div>
+      <!-- Prof 10 -->
+      <div class="team-card">
+        <div class="team-photo-container" onclick="togglePhoto(this)">
+          <div class="team-photo-flip">
+            <img class="team-photo" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/prof-de-bootykat---katou-YX4xo1Z1N1c6x9Lz.jpg" alt="Photo Katou">
+            <img class="team-photo-2" src="https://assets.zyrosite.com/mP4MMz6V72uwoDM5/icon_katou-mxBXey8j8auKk8b8.jpg" alt="Photo Katou 2">
+          </div>
+        </div>
+        <div class="team-badge">BootyKat</div>
+        <p class="team-quote">"Lâche-toi et laisse parler ton attitude féline sur des rythmes endiablés !"</p>
+        <div class="team-name">Katou</div>
+      </div>
+    </div>
+    <div class="slider-arrows">
+      <button onclick="scrollSlider(-1)">‹</button>
+      <button onclick="scrollSlider(1)">›</button>
+    </div>
+    <div class="slider-controls" id="slider-dots"></div>
+  </div>
+  
+  <script>
+    const slider = document.getElementById("slider");
+    const dotsContainer = document.getElementById("slider-dots");
+    const cards = slider.children;
+    
+    // Fonction pour basculer les photos sur mobile
+    function togglePhoto(container) {
+      // Cette fonction ne s'exécute que sur mobile (grâce au onclick)
+      // Sur desktop, l'effet hover CSS s'occupe du changement
+      if (window.innerWidth <= 768) {
+        container.classList.toggle('flipped');
+      }
+    }
+    
+    function updateDots(index) {
+      const dots = dotsContainer.querySelectorAll(".slider-dot");
+      dots.forEach(dot => dot.classList.remove("active"));
+      if (dots[index]) dots[index].classList.add("active");
+    }
+    function scrollSlider(direction) {
+      const cardWidth = cards[0].offsetWidth + 16;
+      slider.scrollBy({
+        left: direction * cardWidth,
+        behavior: 'smooth'
+      });
+    }
+    function createDots() {
+      for (let i = 0; i < cards.length; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("slider-dot");
+        if (i === 0) dot.classList.add("active");
+        dot.addEventListener("click", () => {
+          slider.scrollTo({ left: i * (cards[0].offsetWidth + 16), behavior: "smooth" });
+        });
+        dotsContainer.appendChild(dot);
+      }
+    }
+    createDots();
+    slider.addEventListener("scroll", () => {
+      const index = Math.round(slider.scrollLeft / (cards[0].offsetWidth + 16));
+      updateDots(index);
+    });
+  </script>
+  
