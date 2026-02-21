@@ -86,7 +86,7 @@
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-choregraphie-mp8Jlg3g4nIvKK6l.jpg");
         }
 
-        .course-header.pilate {
+        .course-header.mobilite {
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://assets.zyrosite.com/mP4MMz6V72uwoDM5/cours-de-pilate-91-m5KnZr3WMxI65Xy2.jpg");
         }
 
@@ -590,50 +590,49 @@
                 </div>
             </div>
 
-            <!-- Pilates -->
-            <div class="course-detail-card" id="pilates">
-                <div class="course-header pilate">
-                    <div class="course-title">PILATES</div>
-                    <div class="new-badge">NOUVEAU!</div>
+            <!-- Mobilité -->
+            <div class="course-detail-card" id="mobilite">
+                <div class="course-header mobilite">
+                    <div class="course-title">MOBILITÉ</div>
                 </div>
                 <div class="course-content">
                     <p class="course-brief">
-                        Nos cours de Pilates se concentrent sur la respiration, la posture et le renforcement musculaire profond. Ils constituent un complément idéal pour améliorer souplesse, stabilité et performance dans toutes les disciplines.
+                        La mobilité est la capacité de tes articulations à bouger librement dans toute leur amplitude, tout en étant contrôlées par tes muscles. Bien plus complète que la simple souplesse, c'est l'alliance parfaite entre flexibilité, force et contrôle moteur.
                     </p>
-                    
+
                     <div class="benefits-section">
                         <h3 class="benefits-title">Bénéfices physiques et mentaux :</h3>
                         <div class="benefits-grid">
-                            <div class="benefit-item">🧘‍♀️ Respiration consciente</div>
+                            <div class="benefit-item">🦴 Amplitude articulaire</div>
+                            <div class="benefit-item">💪 Contrôle moteur</div>
                             <div class="benefit-item">🏛️ Posture améliorée</div>
-                            <div class="benefit-item">💪 Renforcement profond</div>
-                            <div class="benefit-item">⚖️ Stabilité et équilibre</div>
-                            <div class="benefit-item">🧠 Concentration mentale</div>
-                            <div class="benefit-item">😌 Relaxation et bien-être</div>
+                            <div class="benefit-item">🩹 Prévention blessures</div>
+                            <div class="benefit-item">⚡ Efficacité énergétique</div>
+                            <div class="benefit-item">🔄 Récupération optimale</div>
                         </div>
                     </div>
-                    
-                    <button class="dropdown-toggle" data-course="pilate">
-                        <span id="pilate-text">Voir plus de détails</span>
+
+                    <button class="dropdown-toggle" data-course="mobilite">
+                        <span id="mobilite-text">Voir plus de détails</span>
                     </button>
-                    
-                    <div class="course-details" id="pilate-details">
-                        <h4>Méthode enseignée :</h4>
+
+                    <div class="course-details" id="mobilite-details">
+                        <h4>Ce que vous apprendrez :</h4>
                         <ul>
-                            <li>Exercices de respiration et centrage</li>
-                            <li>Renforcement des muscles profonds (core, dos)</li>
-                            <li>Mobilité articulaire et étirements</li>
-                            <li>Travail de la proprioception et de l'équilibre</li>
-                            <li>Techniques de relaxation et récupération</li>
+                            <li>Exercices d'amplitude articulaire active et contrôlée</li>
+                            <li>Renforcement des muscles stabilisateurs</li>
+                            <li>Techniques de contrôle moteur et proprioception</li>
+                            <li>Travail ciblé des zones verrouillées (hanches, dos, épaules)</li>
+                            <li>Routines de mobilité fonctionnelle pour le quotidien</li>
                         </ul>
-                        
-                        <h4>Complémentarité parfaite :</h4>
-                        <p>Le Pilates est l'allié idéal de la pole dance et des disciplines aériennes. Il prépare le corps, prévient les blessures et améliore les performances dans toutes les autres pratiques.</p>
-                        
-                        <h4>Bien-être global :</h4>
-                        <p>Au-delà de l'aspect physique, le Pilates apporte une dimension méditative qui aide à gérer le stress, améliorer la concentration et développer une meilleure conscience corporelle.</p>
+
+                        <h4>Bénéfices à long terme :</h4>
+                        <p>Un corps mobile dépense moins d'énergie pour lutter contre ses propres raideurs. La mobilité rend tes tissus plus résilients face aux faux mouvements, favorise la circulation sanguine et te permet de conserver une aisance de mouvement au fil des années.</p>
+
+                        <h4>Complémentarité sportive :</h4>
+                        <p>La mobilité améliore la technique dans toutes les disciplines : un squat plus profond, des figures de pole plus fluides, des mouvements sans compensation. C'est la base de tout mouvement sain et performant.</p>
                     </div>
-                    
+
                     <button class="reservation-btn" data-action="reservation">Réserver un cours</button>
                 </div>
             </div>
@@ -746,7 +745,7 @@
             'exotik': 'exotik',
             'polestrap': 'pole-strap',
             'choree': 'choree',
-            'pilates': 'pilate',
+            'mobilite': 'mobilite',
             'bootykat': 'bootykat',
             'sophrologie': 'sophrologie'
         };
@@ -1044,7 +1043,7 @@
                     console.log('❌ Élément non trouvé pour ID:', hash);
                     console.log('🔍 Debug - tous les éléments avec un ID:');
                     document.querySelectorAll('[id]').forEach(el => {
-                        if (el.id.includes('pole') || el.id.includes('cerceau') || el.id.includes('souplesse') || el.id.includes('exotik') || el.id.includes('choree') || el.id.includes('pilate')) {
+                        if (el.id.includes('pole') || el.id.includes('cerceau') || el.id.includes('souplesse') || el.id.includes('exotik') || el.id.includes('choree') || el.id.includes('mobilite')) {
                             console.log('  -', el.id, ':', el.tagName, el.className);
                         }
                     });
@@ -1155,9 +1154,9 @@ function testDiscipline(discipline) {
         'exotik': 'exotik',
         'polestrap': 'pole-strap',
         'choree': 'choree',
-        'pilates': 'pilate'
+        'mobilite': 'mobilite'
     };
-    
+
     if (anchorMap[discipline]) {
         const element = document.getElementById(discipline);
         if (element) {
@@ -1182,7 +1181,7 @@ function testUrl(hash) {
     window.location.hash = hash;
     setTimeout(() => {
                                 // Forcer la navigation
-                        if (hash && ['poledance','cerceau','souplesse','exotik','polestrap','choree','pilates','bootykat','sophrologie'].includes(hash)) {
+                        if (hash && ['poledance','cerceau','souplesse','exotik','polestrap','choree','mobilite','bootykat','sophrologie'].includes(hash)) {
                             testDiscipline(hash);
                         }
     }, 100);
